@@ -99,6 +99,8 @@
   .dot.yes { background: var(--matcha); }
   .dot.dir { background: linear-gradient(90deg, var(--matcha) 50%, transparent 50%); }
   .dot.no { border-color: var(--no); }
+  .legend-tag { margin-top: 6px; color: var(--clay-deep); }
+  .by-dot { width: 14px; height: 10px; border-radius: 2px; background: var(--clay-deep); display: inline-block; }
 
   /* ---------- intro ---------- */
   .intro {
@@ -165,10 +167,13 @@
   .track[data-v="no"] { opacity: .72; }
 
   .track-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto; column-gap: 12px; row-gap: 2px; align-items: baseline; }
-  .track .dir-tag {
-    justify-self: start; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.6;
-    color: var(--matcha-deep); background: var(--sencha); border-radius: 3px; padding: 1px 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  .track .tags { display: flex; gap: 6px; min-width: 0; }
+  .track .dir-tag, .track .by-tag {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.6;
+    border-radius: 3px; padding: 1px 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .track .dir-tag { color: var(--matcha-deep); background: var(--sencha); min-width: 0; }
+  .track .by-tag { color: var(--paper); background: var(--clay-deep); flex: none; }
   .track .len { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--clay-deep); white-space: nowrap; }
   .track h3 { font-size: 16px; font-weight: 700; line-height: 1.3; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .track .open { font-size: 12px; white-space: nowrap; }
@@ -246,6 +251,7 @@
       <span><i class="dot yes"></i> Exactly this – this direction, this track</span>
       <span><i class="dot dir"></i> Right direction – but a different track</span>
       <span><i class="dot no"></i> No – doesn't fit the moment</span>
+      <span class="legend-tag"><i class="by-dot"></i> Tracks tagged <b>Dani</b> are Dan's own picks</span>
     </div>
   </aside>
 
@@ -357,7 +363,7 @@ const SLOTS = [
     tracks: [
       { id: "24ntSW3QVJzR79lHAAOTaY", title: "Texas Sun", artist: "Khruangbin & Leon Bridges", len: "4:12", dir: "Organic groove · voice",
         why: "Sun, bass, a velvet voice. The brunch standard everything else has to measure up to." },
-      { id: "5PjwpUcHx1zvnMDmQHhFU4", title: "Things Are Gonna Get Easier", artist: "Low Motion Disco", len: "6:15", dir: "Slow disco · Balearic",
+      { id: "5PjwpUcHx1zvnMDmQHhFU4", title: "Things Are Gonna Get Easier", artist: "Low Motion Disco", len: "6:15", dir: "Slow disco · Balearic", by: "Dani",
         why: "The low-motion-disco direction, literally: slow four-to-the-floor, guitar, floating. Daytime disco without the club." },
       { id: "35U4PXL3W3XIkAjEUdhr36", title: "Harvest Moon", artist: "Poolside", len: "6:08", dir: "Daytime disco · cover",
         why: "Neil Young as a Poolside cover. Familiar enough to hum along, slow enough to eat to." },
@@ -416,7 +422,7 @@ function renderSlots() {
           return `
           <article class="track" id="track-${t.id}" data-v="${tv.v || ""}">
             <div class="track-head">
-              <span class="dir-tag">${esc(t.dir)}</span>
+              <span class="tags"><span class="dir-tag">${esc(t.dir)}</span>${t.by ? `<span class="by-tag" title="Added by ${esc(t.by)}">${esc(t.by)}</span>` : ""}</span>
               <span class="len">${t.len}</span>
               <h3 title="${esc(t.title)}">${esc(t.title)}</h3>
               <a class="open" href="https://open.spotify.com/track/${t.id}" target="_blank" rel="noopener">Open in Spotify ↗</a>
@@ -467,7 +473,7 @@ function buildSummary() {
       const tv = state.tracks[t.id];
       if (!tv?.v && !tv?.c?.trim()) continue;
       any = true;
-      let l = `  ${tv.v ? V_MARK[tv.v] : "·"} ${t.artist} – ${t.title}`;
+      let l = `  ${tv.v ? V_MARK[tv.v] : "·"} ${t.artist} – ${t.title}${t.by ? ` [${t.by}]` : ""}`;
       if (tv.v) l += ` (${V_LABEL[tv.v]})`;
       if (tv.c?.trim()) l += ` — "${tv.c.trim()}"`;
       lines.push(l);
