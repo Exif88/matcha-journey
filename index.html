@@ -111,6 +111,21 @@
   .swatch { width: 14px; height: 12px; border-radius: 2px; border: 1px solid var(--clay); background: var(--paper); display: inline-block; }
   .swatch.dan { border: 2px solid var(--seal); background: var(--washi); }
 
+  /* ---------- spotify login notice ---------- */
+  .notice {
+    display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 18px; align-items: start;
+    background: var(--washi); border: 2px solid var(--seal); border-radius: var(--radius);
+    padding: 16px 20px; margin-bottom: 28px;
+  }
+  .notice-mark {
+    width: 44px; height: 44px; border-radius: 6px; background: var(--seal); color: #fff;
+    display: grid; place-items: center; font-family: var(--font-display); font-weight: 600; font-size: 26px; line-height: 1;
+    transform: rotate(-6deg);
+  }
+  .notice h2 { font-family: var(--font-display); font-weight: 600; font-size: 20px; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .notice p { max-width: 90ch; font-size: 15px; }
+  .notice a { font-weight: 700; white-space: nowrap; }
+
   /* ---------- intro ---------- */
   .intro {
     display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 32px; align-items: end;
@@ -285,6 +300,13 @@
   </aside>
 
   <main>
+    <aside class="notice" role="note">
+      <div class="notice-mark">!</div>
+      <div>
+        <h2>Log in to Spotify in this browser first</h2>
+        <p>Logged out, the players only give a 30-second preview – and Spotify picks that clip, often from the wrong part of the track. Logged in, every player plays the <strong>full track</strong> and you can scrub. Sign in once at <a href="https://open.spotify.com" target="_blank" rel="noopener">open.spotify.com ↗</a>, then come back here and reload.</p>
+      </div>
+    </aside>
     <section class="intro">
       <div>
         <h1><span class="jp">抹茶の日 · Pre-Launch</span>Which music carries the morning?</h1>
