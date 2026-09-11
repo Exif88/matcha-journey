@@ -25,6 +25,8 @@
     --clay-deep: #8a7a5f;   /* secondary text */
     --ink: #1e2a1c;         /* text */
     --no: #b3573f;          /* rejection – iron glaze red */
+    --seal: #b3573f;        /* hanko red – Dan's own picks */
+    --washi: #f6f1e6;       /* warm paper for Dan's cards */
     --radius: 6px;
     --rail-w: 280px;
     --gutter: clamp(16px, 3vw, 48px);
@@ -104,8 +106,10 @@
   .dot.yes { background: var(--matcha); }
   .dot.dir { background: linear-gradient(90deg, var(--matcha) 50%, transparent 50%); }
   .dot.no { border-color: var(--no); }
-  .legend-tag { margin-top: 6px; color: var(--clay-deep); }
-  .by-dot { width: 14px; height: 10px; border-radius: 2px; background: var(--clay-deep); display: inline-block; }
+  .legend-tag { color: var(--clay-deep); }
+  .legend-tag:first-of-type { margin-top: 6px; }
+  .swatch { width: 14px; height: 12px; border-radius: 2px; border: 1px solid var(--clay); background: var(--paper); display: inline-block; }
+  .swatch.dan { border: 2px solid var(--seal); background: var(--washi); }
 
   /* ---------- intro ---------- */
   .intro {
@@ -171,18 +175,36 @@
   .track[data-v="dir"] { border-color: var(--matcha); }
   .track[data-v="no"] { opacity: .72; }
 
-  .track-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto; column-gap: 12px; row-gap: 2px; align-items: baseline; }
-  .track .tags { display: flex; gap: 6px; min-width: 0; }
-  .track .dir-tag, .track .by-tag {
-    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.6;
-    border-radius: 3px; padding: 1px 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  /* Dan's own picks: warm washi paper, double frame, red hanko seal */
+  .track.dan { position: relative; border: 2px solid var(--seal); background: var(--washi); box-shadow: inset 0 0 0 4px var(--washi), inset 0 0 0 5px var(--clay); }
+  .track.dan[data-v="yes"] { box-shadow: inset 0 0 0 4px var(--washi), inset 0 0 0 5px var(--clay), 0 0 0 2px var(--sencha); }
+  .track.dan input[type=text], .track.dan textarea { background: #fbf8f0; }
+  .seal {
+    position: absolute; top: -10px; right: 12px; width: 40px; height: 40px; border-radius: 6px;
+    background: var(--seal); color: #fff; display: grid; place-items: center; align-content: center;
+    font-family: var(--font-display); font-weight: 600; font-size: 12px; line-height: 1; letter-spacing: 0.08em;
+    transform: rotate(-6deg); box-shadow: 0 1px 0 rgba(0,0,0,.15); pointer-events: none;
   }
-  .track .dir-tag { color: var(--matcha-deep); background: var(--sencha); min-width: 0; }
-  .track .by-tag { color: var(--paper); background: var(--clay-deep); flex: none; }
-  .track .len { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--clay-deep); white-space: nowrap; }
+  .seal small { display: block; font-size: 8px; letter-spacing: 0.1em; opacity: .85; margin-top: 2px; }
+  .track.dan .chips { padding-right: 48px; }   /* keep the chips clear of the seal */
+
+  /* style group rule inside a slot */
+  .group { grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; margin-top: 8px; }
+  .group:first-child { margin-top: 0; }
+  .group .g { font-family: var(--font-display); font-weight: 500; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--matcha-deep); white-space: nowrap; }
+  .group .rule { height: 1px; background: var(--clay); }
+  .group .n { font-size: 12px; color: var(--clay-deep); font-variant-numeric: tabular-nums; }
+
+  .track-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 3px; align-items: baseline; }
+  .track .chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+  .track .dir-tag {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.6;
+    border-radius: 3px; padding: 1px 7px; color: var(--matcha-deep); background: var(--sencha);
+  }
   .track h3 { font-size: 16px; font-weight: 700; line-height: 1.3; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .track .open { font-size: 12px; white-space: nowrap; }
-  .track .artist { color: var(--clay-deep); font-size: 14px; grid-column: 1 / -1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .track .artist { color: var(--clay-deep); font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .track .len { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--clay-deep); white-space: nowrap; }
   .track .why { font-size: 14px; line-height: 1.45; }
   .track .player { height: 152px; border-radius: 8px; background: var(--foam-deep); overflow: hidden; }
   .track .player iframe { width: 100%; height: 152px; border: 0; display: block; }
@@ -257,7 +279,8 @@
       <span><i class="dot yes"></i> Exactly this – this direction, this track</span>
       <span><i class="dot dir"></i> Right direction – but a different track</span>
       <span><i class="dot no"></i> No – doesn't fit the moment</span>
-      <span class="legend-tag"><i class="by-dot"></i> Tracks tagged <b>Dani</b> are Dan's own picks</span>
+      <span class="legend-tag"><i class="swatch dan"></i> Sealed card on warm paper – Dan's own pick</span>
+      <span class="legend-tag"><i class="swatch"></i> Plain card – a proposal to widen the field</span>
     </div>
   </aside>
 
@@ -301,131 +324,131 @@ const DAN_EMAIL = "";        // e.g. "dan@example.ch"
 
 const SLOTS = [
   {
-    key: "arrive", name: "Arrive", time: "09:00–09:30",
+    key: "arrive", groups: ["Ambient & piano", "Organic groove", "Acoustic & voice", "Slow build"], name: "Arrive", time: "09:00–09:30",
     claim: "Arrive. Slow down. Be welcome.",
     ziel: "Personal welcome, welcome drink, palo santo. The music may be present but must not address anyone – first conversations have to stay light.",
     tracks: [
-      { id: "1osR4MmVEDVk2FXw5xr5Xv", title: "Green", artist: "Hiroshi Yoshimura", len: "5:14", dir: "Japanese ambient",
+      { id: "1osR4MmVEDVk2FXw5xr5Xv", group: "Ambient & piano", title: "Green", artist: "Hiroshi Yoshimura", len: "5:14", dir: "Japanese ambient",
         why: "1986, kankyō ongaku – the music that made Tokyo office lobbies and museums quiet. Literally called \"Green\"." },
-      { id: "5RqKo9P4DLA0bVyY70cWkr", title: "saman", artist: "Ólafur Arnalds", len: "2:11", dir: "Piano · neoclassical",
+      { id: "5RqKo9P4DLA0bVyY70cWkr", group: "Ambient & piano", title: "saman", artist: "Ólafur Arnalds", len: "2:11", dir: "Piano · neoclassical",
         why: "Warm piano with room around it. The yoga-studio direction, without the kitsch." },
-      { id: "2MIavWMdvbYuRoA2Cw6VkN", title: "August 10", artist: "Khruangbin", len: "4:25", dir: "Organic slow groove",
+      { id: "2MIavWMdvbYuRoA2Cw6VkN", group: "Organic groove", title: "August 10", artist: "Khruangbin", len: "4:25", dir: "Organic slow groove",
         why: "Bass, guitar, brushed drums. Movement without beat pressure – in case the morning is allowed some body." },
-      { id: "3jQyadhLTxpxadQlkFh2b8", title: "Heartbeats", artist: "José González", len: "2:40", dir: "Acoustic · voice",
+      { id: "3jQyadhLTxpxadQlkFh2b8", group: "Acoustic & voice", title: "Heartbeats", artist: "José González", len: "2:40", dir: "Acoustic · voice",
         why: "A test: does a singing voice disturb or warm the arrival? Very quiet, very close." },
-      { id: "25lTenJPmSfwCRZi2hjCcB", title: "Outer Wilds", artist: "Andrew Prahlow", len: "2:26", dir: "Acoustic · banjo & piano", by: "Dani",
+      { id: "25lTenJPmSfwCRZi2hjCcB", group: "Acoustic & voice", title: "Outer Wilds", artist: "Andrew Prahlow", len: "2:26", dir: "Acoustic · banjo & piano", by: "Dani",
         why: "Main theme of the game Outer Wilds. Campfire banjo and piano, wide and hopeful – a morning that opens outward." },
-      { id: "37HI0imp0t6a0MBS00lPkS", title: "The Mighty Rio Grande", artist: "This Will Destroy You", len: "11:16", dir: "Post-rock · slow swell", by: "Dani",
+      { id: "37HI0imp0t6a0MBS00lPkS", group: "Slow build", title: "The Mighty Rio Grande", artist: "This Will Destroy You", len: "11:16", dir: "Post-rock · slow swell", by: "Dani",
         why: "Eleven minutes that start as a whisper of guitar and grow into a wide horizon. Long enough to cover most of the arrival on its own." },
-      { id: "0cnqrpIwbHIyxJh4G0UCiV", title: "Where Is It You Go", artist: "DOPE LEMON", len: "6:38", dir: "Hazy · slow groove · voice", by: "Dani",
+      { id: "0cnqrpIwbHIyxJh4G0UCiV", group: "Organic groove", title: "Where Is It You Go", artist: "DOPE LEMON", len: "6:38", dir: "Hazy · slow groove · voice", by: "Dani",
         why: "Angus Stone's lazy-Sunday project. Hazy guitar, soft vocal, unhurried beat – the arrival with a little sway in it." },
-      { id: "4Y2W4zKa3q72ztbkA0r8Va", title: "Dayvan Cowboy", artist: "Boards of Canada", len: "5:00", dir: "Warm electronica · slow build", by: "Dani",
+      { id: "4Y2W4zKa3q72ztbkA0r8Va", group: "Slow build", title: "Dayvan Cowboy", artist: "Boards of Canada", len: "5:00", dir: "Warm electronica · slow build", by: "Dani",
         why: "Two minutes of weightless drift, then the beat and guitars open up like a sky. The arrival's slow turn from quiet to warm." },
-      { id: "488E8BWYDCDrL6vunOAzPy", title: "Lebanese Blonde", artist: "Thievery Corporation", len: "4:50", dir: "Downtempo · sitar · lounge", by: "Dani",
+      { id: "488E8BWYDCDrL6vunOAzPy", group: "Organic groove", title: "Lebanese Blonde", artist: "Thievery Corporation", len: "4:50", dir: "Downtempo · sitar · lounge", by: "Dani",
         why: "Sitar, dub bass, a slow shuffle. The late-90s lounge classic – the arrival as a lobby with the windows open." },
-      { id: "6UnfPP7ChYwQ2h3uTduRA6", title: "Stage Left", artist: "Ajja", len: "4:55", dir: "Psychedelic downtempo · guitar", by: "Dani",
+      { id: "6UnfPP7ChYwQ2h3uTduRA6", group: "Organic groove", title: "Stage Left", artist: "Ajja", len: "4:55", dir: "Psychedelic downtempo · guitar", by: "Dani",
         why: "Swiss psy-dub producer, laid-back tempo with liquid guitar and a rolling bass. The arrival with a slow, curious groove under it." },
     ],
   },
   {
-    key: "see", name: "See", time: "09:30–10:00",
+    key: "see", groups: ["Pure ambient", "Piano"], name: "See", time: "09:30–10:00",
     claim: "Matcha & Friends is seen.",
     ziel: "Speeches by Morena and Marko. The music sits under voices: no pulse, no melody that pulls attention – or off entirely while someone speaks.",
     tracks: [
-      { id: "3bCmDqflFBHijgJfvtqev5", title: "1/1", artist: "Brian Eno", len: "17:21", dir: "Pure ambient",
+      { id: "3bCmDqflFBHijgJfvtqev5", group: "Pure ambient", title: "1/1", artist: "Brian Eno", len: "17:21", dir: "Pure ambient",
         why: "Music for Airports. 17 minutes that disappear under speech and still hold the room." },
-      { id: "25zykbJGBYXYjnq5VyhO3N", title: "Ambre", artist: "Nils Frahm", len: "3:47", dir: "Solo piano",
+      { id: "25zykbJGBYXYjnq5VyhO3N", group: "Piano", title: "Ambre", artist: "Nils Frahm", len: "3:47", dir: "Solo piano",
         why: "Intimate piano, almost whispered. For the moments between two speakers." },
-      { id: "2DuFmqmY2DatBTiWz2tXcF", title: "andata", artist: "Ryuichi Sakamoto", len: "4:38", dir: "Piano · organ · Japan",
+      { id: "2DuFmqmY2DatBTiWz2tXcF", group: "Piano", title: "andata", artist: "Ryuichi Sakamoto", len: "4:38", dir: "Piano · organ · Japan",
         why: "Solemn, slow, Japanese. Fits \"Thank You and Outlook\"." },
-      { id: "4sQBgAPX981djCcsjDJvQx", title: "Glass", artist: "Hania Rani", len: "4:30", dir: "Piano with pulse",
+      { id: "4sQBgAPX981djCcsjDJvQx", group: "Piano", title: "Glass", artist: "Hania Rani", len: "4:30", dir: "Piano with pulse",
         why: "Counter-probe: a bit more motion. Too much under speeches, or exactly right as a transition?" },
     ],
   },
   {
-    key: "breathe", name: "Breathe", time: "10:00–10:30",
+    key: "breathe", groups: ["Drones & bowls", "Soft ambient", "Cinematic"], name: "Breathe", time: "10:00–10:30",
     claim: "Cultivating presence.",
     ziel: "Breathwork with Morena. Regulate the nervous system, arrive in the moment. If Morena brings her own music these are just proposals – otherwise: long, deep pieces without breaks.",
     tracks: [
-      { id: "5aGcszkgFp1DOnxziXZrUw", title: "Singing Bowl (Ascension)", artist: "Jon Hopkins", len: "20:53", dir: "Singing bowl · drone",
+      { id: "5aGcszkgFp1DOnxziXZrUw", group: "Drones & bowls", title: "Singing Bowl (Ascension)", artist: "Jon Hopkins", len: "20:53", dir: "Singing bowl · drone",
         why: "One singing bowl, 21 minutes. Made for exactly this kind of session – carries a whole breathwork round." },
-      { id: "4ZknuVR2jOpMOcfwWpsuEr", title: "An Ending (Ascent)", artist: "Brian Eno", len: "4:24", dir: "Floating · bright", by: "Dani",
+      { id: "4ZknuVR2jOpMOcfwWpsuEr", group: "Drones & bowls", title: "An Ending (Ascent)", artist: "Brian Eno", len: "4:24", dir: "Floating · bright", by: "Dani",
         why: "The classic for letting go. No rhythm, only lift." },
-      { id: "47vFyxAv24QxAOfdMuE3oV", title: "Nara", artist: "E.S. Posthumus", len: "4:51", dir: "Cinematic · choir & strings", by: "Dani",
+      { id: "47vFyxAv24QxAOfdMuE3oV", group: "Cinematic", title: "Nara", artist: "E.S. Posthumus", len: "4:51", dir: "Cinematic · choir & strings", by: "Dani",
         why: "Named after Japan's first capital. Slow orchestral build with choir – the most cinematic option on the page; test whether the session wants that lift." },
-      { id: "1GAVnAxnZfqIU2Yydferqt", title: "Pulsar", artist: "Brett Janzen", len: "5:41", dir: "Ambient · slow pulse", by: "Dani",
+      { id: "1GAVnAxnZfqIU2Yydferqt", group: "Soft ambient", title: "Pulsar", artist: "Brett Janzen", len: "5:41", dir: "Ambient · slow pulse", by: "Dani",
         why: "Wide synth ambient with a slow, steady pulse underneath – modern and weightless, a pulse to breathe against." },
-      { id: "3Z9PWaE8d55XcOxEHwx6U8", title: "Meditation No. 1", artist: "Laraaji & Brian Eno", len: "18:47", dir: "Zither · shimmer",
+      { id: "3Z9PWaE8d55XcOxEHwx6U8", group: "Drones & bowls", title: "Meditation No. 1", artist: "Laraaji & Brian Eno", len: "18:47", dir: "Zither · shimmer",
         why: "Day of Radiance. Shimmering zither, warmer and more organic than pure synth drones." },
-      { id: "6eZLzv6MRsFPjJhmhkK8qC", title: "Possible", artist: "East Forest", len: "5:57", dir: "Ceremony sound · soft pulse",
+      { id: "6eZLzv6MRsFPjJhmhkK8qC", group: "Soft ambient", title: "Possible", artist: "East Forest", len: "5:57", dir: "Ceremony sound · soft pulse",
         why: "The direction breathwork facilitators often play themselves: a quiet pulse at breathing tempo." },
-      { id: "18SAkd5Qu3eoZDo3AWHSJc", title: "Calm Rivers", artist: "La Reve", len: "3:03", dir: "Ambient · water", by: "Dani",
+      { id: "18SAkd5Qu3eoZDo3AWHSJc", group: "Soft ambient", title: "Calm Rivers", artist: "La Reve", len: "3:03", dir: "Ambient · water", by: "Dani",
         why: "Soft, flowing ambient. Short, so it works as a bridge in and out of the session." },
-      { id: "0onv9ZfIx8aknWReDO1PCu", title: "Earth Om (Sacred Resonance)", artist: "Byron Metcalf", len: "13:21", dir: "Drone · frame drum · shamanic", by: "Dani",
+      { id: "0onv9ZfIx8aknWReDO1PCu", group: "Drones & bowls", title: "Earth Om (Sacred Resonance)", artist: "Byron Metcalf", len: "13:21", dir: "Drone · frame drum · shamanic", by: "Dani",
         why: "Deep earth drone with slow frame drum. 13 minutes, grounding rather than floating – the counterpart to the singing bowl." },
     ],
   },
   {
-    key: "feel", name: "Feel", time: "10:30–11:00",
+    key: "feel", groups: ["Traditional Japan", "Piano & voice", "Warm & familiar"], name: "Feel", time: "10:30–11:00",
     claim: "Feeling the mindful practice behind matcha.",
     ziel: "Workshop \"How over What\" with Marko – origin and meaning of matcha, Japanese tea culture. Here the music may be most clearly Japanese, without becoming a cliché.",
     tracks: [
-      { id: "6TbAGuSArjhdMnPYFtFWA9", title: "Tsuru no Sugomori", artist: "Rodrigo Rodriguez (shakuhachi)", len: "5:13", dir: "Shakuhachi · traditional",
+      { id: "6TbAGuSArjhdMnPYFtFWA9", group: "Traditional Japan", title: "Tsuru no Sugomori", artist: "Rodrigo Rodriguez (shakuhachi)", len: "5:13", dir: "Shakuhachi · traditional",
         why: "Bamboo flute, a honkyoku piece. The Zen root of the tea ceremony – this is what the original sounds like." },
-      { id: "6qsZP3u6wkeRDFd4GiLLOg", title: "Tobiume", artist: "Susumu Yokota", len: "4:38", dir: "Japanese ambient · koto texture",
+      { id: "6qsZP3u6wkeRDFd4GiLLOg", group: "Traditional Japan", title: "Tobiume", artist: "Susumu Yokota", len: "4:38", dir: "Japanese ambient · koto texture",
         why: "From the album \"Sakura\". Japanese timbres in a modern frame – traditional without the museum." },
-      { id: "5relTzF9GcxxTF0D4Id6uo", title: "Aqua", artist: "Ryuichi Sakamoto", len: "4:41", dir: "Piano · still",
+      { id: "5relTzF9GcxxTF0D4Id6uo", group: "Piano & voice", title: "Aqua", artist: "Ryuichi Sakamoto", len: "4:41", dir: "Piano · still",
         why: "Sakamoto's quietest piece, solo recording from 2020. Water, tea bowl, silence." },
-      { id: "1IEN6uB8gSG7DAoqZV8cNg", title: "Porcelain", artist: "Ichiko Aoba", len: "4:29", dir: "Japanese folk · voice",
+      { id: "1IEN6uB8gSG7DAoqZV8cNg", group: "Piano & voice", title: "Porcelain", artist: "Ichiko Aoba", len: "4:29", dir: "Japanese folk · voice",
         why: "Guitar and voice from Okinawa. A test: may someone sing during the workshop?" },
-      { id: "23HUlzt20YuALl5Q2gWsKu", title: "Summer", artist: "Joe Hisaishi", len: "6:24", dir: "Warm · well known",
+      { id: "23HUlzt20YuALl5Q2gWsKu", group: "Warm & familiar", title: "Summer", artist: "Joe Hisaishi", len: "6:24", dir: "Warm · well known",
         why: "Kikujiro soundtrack. Very familiar, very friendly – counter-probe whether recognition helps or distracts." },
-      { id: "3IWc2l9A8RyPfJpDmtRwtu", title: "Lotus", artist: "Secret Garden", len: "4:35", dir: "Celtic-Nordic · flute & strings", by: "Dani",
+      { id: "3IWc2l9A8RyPfJpDmtRwtu", group: "Warm & familiar", title: "Lotus", artist: "Secret Garden", len: "4:35", dir: "Celtic-Nordic · flute & strings", by: "Dani",
         why: "Rolf Løvland's Earth Songs. Flute over strings, gentle and unhurried – the lotus as a bridge from Japan to the Nordic." },
     ],
   },
   {
-    key: "taste", name: "Taste", time: "11:00–13:00",
+    key: "taste", groups: ["Organic groove & voice", "Slow disco & pop", "Deep & organic house"], name: "Taste", time: "11:00–13:00",
     claim: "Enjoying the matcha brunch together.",
     ziel: "Two hours of brunch by Martina. Now the music may carry conversations instead of just holding the room: groove, voices, Sunday feeling – but never so loud that people have to lean in.",
     tracks: [
-      { id: "24ntSW3QVJzR79lHAAOTaY", title: "Texas Sun", artist: "Khruangbin & Leon Bridges", len: "4:12", dir: "Organic groove · voice", by: "Dani",
+      { id: "24ntSW3QVJzR79lHAAOTaY", group: "Organic groove & voice", title: "Texas Sun", artist: "Khruangbin & Leon Bridges", len: "4:12", dir: "Organic groove · voice", by: "Dani",
         why: "Sun, bass, a velvet voice. The brunch standard everything else has to measure up to." },
-      { id: "5PjwpUcHx1zvnMDmQHhFU4", title: "Things Are Gonna Get Easier", artist: "Low Motion Disco", len: "6:15", dir: "Slow disco · Balearic", by: "Dani",
+      { id: "5PjwpUcHx1zvnMDmQHhFU4", group: "Slow disco & pop", title: "Things Are Gonna Get Easier", artist: "Low Motion Disco", len: "6:15", dir: "Slow disco · Balearic", by: "Dani",
         why: "The low-motion-disco direction, literally: slow four-to-the-floor, guitar, floating. Daytime disco without the club." },
-      { id: "35U4PXL3W3XIkAjEUdhr36", title: "Harvest Moon", artist: "Poolside", len: "6:08", dir: "Daytime disco · cover",
+      { id: "35U4PXL3W3XIkAjEUdhr36", group: "Slow disco & pop", title: "Harvest Moon", artist: "Poolside", len: "6:08", dir: "Daytime disco · cover",
         why: "Neil Young as a Poolside cover. Familiar enough to hum along, slow enough to eat to." },
-      { id: "2CuUB5MbfRShtunR8g5hjR", title: "Ylang Ylang", artist: "FKJ", len: "3:33", dir: "Lo-fi soul · piano",
+      { id: "2CuUB5MbfRShtunR8g5hjR", group: "Organic groove & voice", title: "Ylang Ylang", artist: "FKJ", len: "3:33", dir: "Lo-fi soul · piano",
         why: "Piano, bass, a little dust. Between courses, when it may get quieter again." },
-      { id: "75IQVo8hqI1iwVZyvkN2VT", title: "Show Me How", artist: "Men I Trust", len: "3:35", dir: "Dream pop · voice",
+      { id: "75IQVo8hqI1iwVZyvkN2VT", group: "Organic groove & voice", title: "Show Me How", artist: "Men I Trust", len: "3:35", dir: "Dream pop · voice",
         why: "Soft voice, soft bass. A bit younger and closer to café than to wellness." },
-      { id: "6G6M4fl2I0eqEQnzyTwR8m", title: "You Wish", artist: "Nightmares On Wax", len: "3:30", dir: "Downtempo · Sunday", by: "Dani",
+      { id: "6G6M4fl2I0eqEQnzyTwR8m", group: "Organic groove & voice", title: "You Wish", artist: "Nightmares On Wax", len: "3:30", dir: "Downtempo · Sunday", by: "Dani",
         why: "The Sunday-morning classic. Hip-hop pulse in slow motion, strings on top." },
-      { id: "7rU6Iebxzlvqy5t857bKFq", title: "Plastic Love", artist: "Mariya Takeuchi", len: "4:54", dir: "City pop · Japan 1984",
+      { id: "7rU6Iebxzlvqy5t857bKFq", group: "Slow disco & pop", title: "Plastic Love", artist: "Mariya Takeuchi", len: "4:54", dir: "City pop · Japan 1984",
         why: "A wink: the Japanese pop classic. Too much? Or exactly the moment the brunch starts laughing?" },
-      { id: "0pVEx8AcTpuK4OYXziesGF", title: "California Dreamin'", artist: "Bobby Womack", len: "3:08", dir: "Soul · 1968 · voice", by: "Dani",
+      { id: "0pVEx8AcTpuK4OYXziesGF", group: "Organic groove & voice", title: "California Dreamin'", artist: "Bobby Womack", len: "3:08", dir: "Soul · 1968 · voice", by: "Dani",
         why: "The Mamas & the Papas song turned into slow-burning soul. Warm, familiar, sung with grit – the brunch with a little sun on the table." },
-      { id: "3phBxj9avtQDkWblVg7s02", title: "Organic Cold Brewed Hipster Funk", artist: "Martin Roth", len: "3:55", dir: "Deep house · funk · instrumental", by: "Dani",
+      { id: "3phBxj9avtQDkWblVg7s02", group: "Deep & organic house", title: "Organic Cold Brewed Hipster Funk", artist: "Martin Roth", len: "3:55", dir: "Deep house · funk · instrumental", by: "Dani",
         why: "Tongue-in-cheek title, serious groove: warm bass, clipped guitar, a steady house pulse. The brunch when the second matcha kicks in." },
-      { id: "3ZzhV6JIDKWvWR7wiKWD0C", title: "La femme d'argent", artist: "Air", len: "7:06", dir: "French downtempo · bass & Rhodes", by: "Dani",
+      { id: "3ZzhV6JIDKWvWR7wiKWD0C", group: "Organic groove & voice", title: "La femme d'argent", artist: "Air", len: "7:06", dir: "French downtempo · bass & Rhodes", by: "Dani",
         why: "Moon Safari's opener: walking bass, Rhodes, a slow swell of strings. Seven minutes of the calmest kind of cool – Sunday brunch in Versailles." },
-      { id: "7nZ9CzhiFRPhOQCn7eDSnn", title: "Vanille fraise", artist: "L'Impératrice", len: "3:58", dir: "French disco-pop · voice", by: "Dani",
+      { id: "7nZ9CzhiFRPhOQCn7eDSnn", group: "Slow disco & pop", title: "Vanille fraise", artist: "L'Impératrice", len: "3:58", dir: "French disco-pop · voice", by: "Dani",
         why: "Parisian nu-disco, sung in French, light as its title. Bright and dancing without ever getting loud – the brunch at its most playful." },
-      { id: "2GeQK3SMvjsQqN2UMWlYwA", title: "Cool Melt", artist: "HVOB", len: "6:23", dir: "Deep electronica · hushed voice", by: "Dani",
+      { id: "2GeQK3SMvjsQqN2UMWlYwA", group: "Deep & organic house", title: "Cool Melt", artist: "HVOB", len: "6:23", dir: "Deep electronica · hushed voice", by: "Dani",
         why: "Vienna duo, slow deep pulse under a whispered vocal. The most electronic option here – the brunch drifting towards early afternoon." },
-      { id: "4PyKCv9AegOID0RukFs9Hq", title: "Give It Up", artist: "16BL", len: "8:24", dir: "Deep house · long build", by: "Dani",
+      { id: "4PyKCv9AegOID0RukFs9Hq", group: "Deep & organic house", title: "Give It Up", artist: "16BL", len: "8:24", dir: "Deep house · long build", by: "Dani",
         why: "Eight minutes of patient deep house: a soft vocal hook, warm pads, a groove that never rushes. For the last stretch, when plates are empty and nobody wants to leave." },
-      { id: "2Q78M3kMK7ivJj5a6SGPFT", title: "I Want To Know What Love Is (BLOND:ISH Sunrise Jungle Rework)", artist: "Foreigner, BLOND:ISH", len: "5:16", dir: "Sunrise house · 80s ballad rework", by: "Dani",
+      { id: "2Q78M3kMK7ivJj5a6SGPFT", group: "Deep & organic house", title: "I Want To Know What Love Is (BLOND:ISH Sunrise Jungle Rework)", artist: "Foreigner, BLOND:ISH", len: "5:16", dir: "Sunrise house · 80s ballad rework", by: "Dani",
         why: "The Foreigner ballad reworked as a soft sunrise-house tune. Everyone knows the chorus, nobody expects it here – the brunch's one big smile." },
-      { id: "2kQmAiPgeF0Nhlzt0U0MNU", title: "Shanti (Goldcap Remix)", artist: "Rapossa, Goldcap", len: "7:53", dir: "Organic house · Eastern flute", by: "Dani",
+      { id: "2kQmAiPgeF0Nhlzt0U0MNU", group: "Deep & organic house", title: "Shanti (Goldcap Remix)", artist: "Rapossa, Goldcap", len: "7:53", dir: "Organic house · Eastern flute", by: "Dani",
         why: "Slow organic house with flute and hand percussion – the sound of a good day-party at its calmest. Eight minutes that keep the room moving gently." },
-      { id: "5bj0LWZmbEbvx4GIxZDtp9", title: "Airplane Mode", artist: "HIGHLITE", len: "5:46", dir: "Melodic house · downtempo", by: "Dani",
+      { id: "5bj0LWZmbEbvx4GIxZDtp9", group: "Deep & organic house", title: "Airplane Mode", artist: "HIGHLITE", len: "5:46", dir: "Melodic house · downtempo", by: "Dani",
         why: "Soft melodic house with a hazy top line – phone off, no hurry. Sits between the organic tracks and the deeper electronic ones." },
-      { id: "5DXqolH8YlnothbJm5dGCk", title: "Paradise Disco", artist: "Flave, Seebo, Tipping Point", len: "4:02", dir: "Nu-disco · sunny", by: "Dani",
+      { id: "5DXqolH8YlnothbJm5dGCk", group: "Slow disco & pop", title: "Paradise Disco", artist: "Flave, Seebo, Tipping Point", len: "4:02", dir: "Nu-disco · sunny", by: "Dani",
         why: "Bright, bouncy nu-disco – exactly what the title promises. The brunch's most upbeat moment, still soft enough to stay in the background." },
-      { id: "6IQRx7CxkeuvEAGp9zbAwX", title: "Wonderful Life '25 (Extended)", artist: "Hurts, Purple Disco Machine", len: "5:39", dir: "Disco-pop · well known", by: "Dani",
+      { id: "6IQRx7CxkeuvEAGp9zbAwX", group: "Slow disco & pop", title: "Wonderful Life '25 (Extended)", artist: "Hurts, Purple Disco Machine", len: "5:39", dir: "Disco-pop · well known", by: "Dani",
         why: "The 2010 Hurts anthem given Purple Disco Machine's glossy disco treatment. Big, familiar chorus – a test of how much pop the brunch can carry." },
-      { id: "7pdPZuy0ILkf5IT1oIsJMK", title: "Soul (NiCe7 Remix)", artist: "AFFKT, Sutja Gutierrez, NiCe7", len: "7:02", dir: "Deep house · soulful voice", by: "Dani",
+      { id: "7pdPZuy0ILkf5IT1oIsJMK", group: "Deep & organic house", title: "Soul (NiCe7 Remix)", artist: "AFFKT, Sutja Gutierrez, NiCe7", len: "7:02", dir: "Deep house · soulful voice", by: "Dani",
         why: "Sutja Gutierrez's raw vocal over a rolling deep-house groove. Seven minutes with real soul in it – for the stretch when the brunch turns into an afternoon." },
     ],
   },
@@ -469,16 +492,20 @@ function renderSlots() {
         <p class="ziel">${esc(s.ziel)}</p>
       </div>
       <div class="tracks">
-        ${s.tracks.map(t => {
+        ${s.groups.map(g => {
+          const inGroup = s.tracks.filter(t => t.group === g);
+          if (!inGroup.length) return "";
+          return `<div class="group"><span class="g">${esc(g)}</span><span class="rule"></span><span class="n">${inGroup.length}</span></div>` + inGroup.map(t => {
           const tv = state.tracks[t.id] || {};
           return `
-          <article class="track" id="track-${t.id}" data-v="${tv.v || ""}">
+          <article class="track${t.by ? " dan" : ""}" id="track-${t.id}" data-v="${tv.v || ""}">
+            ${t.by ? `<div class="seal" title="${esc(t.by)}'s pick">DAN<small>印</small></div>` : ""}
             <div class="track-head">
-              <span class="tags"><span class="dir-tag">${esc(t.dir)}</span>${t.by ? `<span class="by-tag" title="Added by ${esc(t.by)}">${esc(t.by)}</span>` : ""}</span>
-              <span class="len">${t.len}</span>
+              <div class="chips"><span class="dir-tag">${esc(t.dir)}</span></div>
               <h3 title="${esc(t.title)}">${esc(t.title)}</h3>
               <a class="open" href="https://open.spotify.com/track/${t.id}" target="_blank" rel="noopener">Open in Spotify ↗</a>
               <div class="artist" title="${esc(t.artist)}">${esc(t.artist)}</div>
+              <span class="len">${t.len}</span>
             </div>
             <p class="why">${esc(t.why)}</p>
             <div class="player"><div data-track="${t.id}" data-label="${esc(t.artist)} – ${esc(t.title)}"></div></div>
@@ -491,6 +518,7 @@ function renderSlots() {
               <textarea id="c-${t.id}" data-track="${t.id}" placeholder="e.g. &quot;more of this, but without vocals&quot;">${esc(tv.c || "")}</textarea>
             </label>
           </article>`;
+          }).join("");
         }).join("")}
       </div>
       <div class="slot-foot">
