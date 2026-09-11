@@ -122,6 +122,8 @@
     display: grid; place-items: center; font-family: var(--font-display); font-weight: 600; font-size: 26px; line-height: 1;
     transform: rotate(-6deg);
   }
+  .notice.ok { border-color: var(--matcha); background: var(--paper); }
+  .notice.ok .notice-mark { background: var(--matcha); transform: none; }
   .notice h2 { font-family: var(--font-display); font-weight: 600; font-size: 20px; letter-spacing: 0.04em; margin-bottom: 4px; }
   .notice p { max-width: 90ch; font-size: 15px; }
   .notice a { font-weight: 700; white-space: nowrap; }
@@ -300,11 +302,11 @@
   </aside>
 
   <main>
-    <aside class="notice" role="note">
-      <div class="notice-mark">!</div>
+    <aside class="notice" role="note" id="notice">
+      <div class="notice-mark" id="notice-mark">!</div>
       <div>
-        <h2>Log in to Spotify in this browser first</h2>
-        <p>Logged out, the players only give a 30-second preview – and Spotify picks that clip, often from the wrong part of the track. Logged in, every player plays the <strong>full track</strong> and you can scrub. Sign in once at <a href="https://open.spotify.com" target="_blank" rel="noopener">open.spotify.com ↗</a>, then come back here and reload.</p>
+        <h2 id="notice-title">Log in to Spotify in this browser first</h2>
+        <p id="notice-text">Logged out, the players only give a 30-second preview – and Spotify picks that clip, often from the wrong part of the track. Logged in, every player plays the <strong>full track</strong> and you can scrub. Sign in once at <a href="https://open.spotify.com" target="_blank" rel="noopener">open.spotify.com ↗</a>, then come back here and reload.</p>
       </div>
     </aside>
     <section class="intro">
@@ -656,6 +658,7 @@ function mountPlayer(host) {
   spotifyAPI.createController(host, { uri: `spotify:track:${id}`, width: "100%", height: 152 }, ctrl => {
     controllers.set(id, ctrl);
     ctrl.addListener("playback_update", e => {
+      if (e.data.duration > 0) setSpotifyLogin(e.data.duration > 31000);   // previews are exactly 30 s
       const isPlaying = !e.data.isPaused;
       if (isPlaying && !playing.has(id)) {
         for (const other of playing) { controllers.get(other)?.pause(); playing.delete(other); }
@@ -664,6 +667,21 @@ function mountPlayer(host) {
     });
   });
 }
+
+// Notice at the top: red "log in" until a player proves full-length playback.
+const LOGIN_KEY = "matcha-journey-spotify-full";
+function setSpotifyLogin(full) {
+  const n = document.getElementById("notice");
+  if (n.classList.contains("ok") === full) return;
+  n.classList.toggle("ok", full);
+  document.getElementById("notice-mark").textContent = full ? "✓" : "!";
+  document.getElementById("notice-title").textContent = full ? "Spotify is logged in – you hear full tracks" : "Log in to Spotify in this browser first";
+  document.getElementById("notice-text").innerHTML = full
+    ? "Every player plays the whole track and you can scrub to any point. If a player ever shows a <strong>Preview</strong> pill again, the login has expired – sign in at <a href=\"https://open.spotify.com\" target=\"_blank\" rel=\"noopener\">open.spotify.com ↗</a> and reload."
+    : "Logged out, the players only give a 30-second preview – and Spotify picks that clip, often from the wrong part of the track. Logged in, every player plays the <strong>full track</strong> and you can scrub. Sign in once at <a href=\"https://open.spotify.com\" target=\"_blank\" rel=\"noopener\">open.spotify.com ↗</a>, then come back here and reload.";
+  try { localStorage.setItem(LOGIN_KEY, full ? "1" : "0"); } catch {}
+}
+try { if (localStorage.getItem(LOGIN_KEY) === "1") setSpotifyLogin(true); } catch {}
 
 const playerIO = new IntersectionObserver(entries => {
   for (const en of entries) if (en.isIntersecting) { playerIO.unobserve(en.target); mountPlayer(en.target); }
