@@ -63,6 +63,9 @@
     font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--clay-deep);
     font-variant-numeric: tabular-nums;
   }
+  .topbar-right { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; justify-content: end; }
+  .saved { font-size: 12px; color: var(--matcha-deep); font-variant-numeric: tabular-nums; min-width: 9em; text-align: right; }
+  .btn.small { padding: 5px 10px; font-size: 12px; }
 
   /* ---------- shell: rail + main ---------- */
   .shell {
@@ -274,7 +277,11 @@
 
 <header class="topbar">
   <h1 class="wordmark">Matcha<span class="to">と</span>Friends</h1>
-  <div class="meta">Music Journey · Sat 26 Sep 2026 · 09:00–13:00 · Stauffacherstr. 96, Zürich</div>
+  <div class="topbar-right">
+    <div class="meta">Music Journey · Sat 26 Sep 2026 · 09:00–13:00 · Stauffacherstr. 96, Zürich</div>
+    <span class="saved" id="saved" aria-live="polite"></span>
+    <button class="btn quiet small" id="btn-reset-top" type="button">Reset everything</button>
+  </div>
 </header>
 
 <div class="shell">
@@ -488,11 +495,21 @@ function load() {
   catch { return { who: "", tracks: {}, slots: {} }; }
 }
 let saveTimer;
+function persist() {
+  clearTimeout(saveTimer);
+  try {
+    localStorage.setItem(STORE, JSON.stringify(state));
+    document.getElementById("saved").textContent = "Saved in this browser · " + new Date().toLocaleTimeString("en-CH", { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    document.getElementById("saved").textContent = "Could not save – browser storage is blocked";
+  }
+}
 function save() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {} }, 150);
+  saveTimer = setTimeout(persist, 150);   // every tap and keystroke lands here; short debounce for typing
   renderProgress(); renderSummary();
 }
+window.addEventListener("pagehide", persist);   // flush anything still in the debounce window
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -626,15 +643,17 @@ document.getElementById("btn-copy").addEventListener("click", async () => {
   catch { st.textContent = "Copy didn't work – select the text on the right and copy it by hand."; }
 });
 
-document.getElementById("btn-reset").addEventListener("click", () => {
-  if (!confirm("Really delete all ratings and comments?")) return;
+function resetAll() {
+  if (!confirm("Really delete all ratings, comments and notes?")) return;
   state = { who: state.who, tracks: {}, slots: {} };
-  try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {}
+  persist();
   controllers.forEach(c => c?.destroy?.());
   controllers.clear(); playing.clear();
   renderSlots(); renderProgress(); renderSummary();
   if (spotifyAPI) mountPlayers();
-});
+}
+document.getElementById("btn-reset").addEventListener("click", resetAll);
+document.getElementById("btn-reset-top").addEventListener("click", resetAll);
 
 // ---- players: one at a time ----
 // Players mount through Spotify's iFrame API when a card scrolls near, so we
@@ -703,6 +722,7 @@ const io = new IntersectionObserver(entries => {
 renderTimeline();
 renderSlots();
 document.getElementById("who").value = state.who || "";
+if (Object.keys(state.tracks).length || Object.keys(state.slots).length) document.getElementById("saved").textContent = "Restored from this browser";
 renderProgress();
 renderSummary();
 document.querySelectorAll(".slot").forEach(s => io.observe(s));
