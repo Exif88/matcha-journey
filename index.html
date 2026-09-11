@@ -126,6 +126,8 @@
     transform: rotate(-6deg);
   }
   .notice.ok { border-color: var(--matcha); background: var(--paper); }
+  .notice.phone { border-color: var(--clay-deep); background: var(--paper); }
+  .notice.phone .notice-mark { background: var(--clay-deep); transform: none; font-style: italic; }
   .notice.ok .notice-mark { background: var(--matcha); transform: none; }
   .notice h2 { font-family: var(--font-display); font-weight: 600; font-size: 20px; letter-spacing: 0.04em; margin-bottom: 4px; }
   .notice p { max-width: 90ch; font-size: 15px; }
@@ -701,6 +703,17 @@ function setSpotifyLogin(full) {
   try { localStorage.setItem(LOGIN_KEY, full ? "1" : "0"); } catch {}
 }
 try { if (localStorage.getItem(LOGIN_KEY) === "1") setSpotifyLogin(true); } catch {}
+
+// Phones: Spotify's embed is preview-only there regardless of login (the iframe never
+// sees the login cookie, and full playback is handed to the app). Say so instead.
+const onPhone = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (matchMedia("(pointer: coarse)").matches && innerWidth < 900);
+if (onPhone && !document.getElementById("notice").classList.contains("ok")) {
+  const n = document.getElementById("notice");
+  n.classList.add("phone");
+  document.getElementById("notice-mark").textContent = "i";
+  document.getElementById("notice-title").textContent = "On a phone you only get 30-second previews";
+  document.getElementById("notice-text").innerHTML = "Spotify's player in a mobile browser can't play full tracks, even when you're logged in – the preview is all it gives, and Spotify picks that clip. To hear a whole track, tap <strong>Open in Spotify</strong> on the card (opens the app). For full tracks right here on the page, open this link on a laptop or desktop browser where you're logged into Spotify.";
+}
 
 const playerIO = new IntersectionObserver(entries => {
   for (const en of entries) if (en.isIntersecting) { playerIO.unobserve(en.target); mountPlayer(en.target); }
