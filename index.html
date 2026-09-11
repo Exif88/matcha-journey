@@ -8,6 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<script>
+  // Defined before the API script so the callback exists whenever it arrives.
+  window.onSpotifyIframeApiReady = api => { window.__spotifyAPI = api; window.__onSpotifyAPI?.(api); };
+</script>
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 <style>
   :root {
     --foam: #eef0e4;        /* whisked matcha foam – page ground */
@@ -179,7 +184,8 @@
   .track .open { font-size: 12px; white-space: nowrap; }
   .track .artist { color: var(--clay-deep); font-size: 14px; grid-column: 1 / -1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .track .why { font-size: 14px; line-height: 1.45; }
-  .track iframe { width: 100%; height: 152px; border: 0; border-radius: 8px; display: block; background: var(--foam-deep); }
+  .track .player { height: 152px; border-radius: 8px; background: var(--foam-deep); overflow: hidden; }
+  .track .player iframe { width: 100%; height: 152px; border: 0; display: block; }
   .verdict { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--clay); border-radius: var(--radius); overflow: hidden; align-self: start; }
   .verdict button {
     font: inherit; font-size: 13px; padding: 8px 4px; border: 0; background: transparent; color: var(--ink); cursor: pointer;
@@ -473,7 +479,7 @@ function renderSlots() {
               <div class="artist" title="${esc(t.artist)}">${esc(t.artist)}</div>
             </div>
             <p class="why">${esc(t.why)}</p>
-            <iframe title="${esc(t.artist)} – ${esc(t.title)}" src="https://open.spotify.com/embed/track/${t.id}?utm_source=generator" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+            <div class="player"><div data-track="${t.id}" data-label="${esc(t.artist)} – ${esc(t.title)}"></div></div>
             <div class="verdict" role="group" aria-label="Rating for ${esc(t.title)}">
               <button type="button" data-track="${t.id}" data-v="yes" class="${tv.v === "yes" ? "on" : ""}"><i class="dot yes"></i>Exactly this</button>
               <button type="button" data-track="${t.id}" data-v="dir" class="${tv.v === "dir" ? "on" : ""}"><i class="dot dir"></i>Direction</button>
@@ -570,8 +576,51 @@ document.getElementById("btn-reset").addEventListener("click", () => {
   if (!confirm("Really delete all ratings and comments?")) return;
   state = { who: state.who, tracks: {}, slots: {} };
   try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {}
+  controllers.forEach(c => c?.destroy?.());
+  controllers.clear(); playing.clear();
   renderSlots(); renderProgress(); renderSummary();
+  if (spotifyAPI) mountPlayers();
 });
+
+// ---- players: one at a time ----
+// Players mount through Spotify's iFrame API when a card scrolls near, so we
+// get playback events and can pause every other player when one starts.
+let spotifyAPI = null;
+const controllers = new Map();   // track id → controller
+const playing = new Set();       // ids currently reporting isPaused: false
+const onAPI = api => { spotifyAPI = api; mountPlayers(); };
+if (window.__spotifyAPI) onAPI(window.__spotifyAPI); else window.__onSpotifyAPI = onAPI;
+
+function mountPlayer(host) {
+  const id = host.dataset.track;
+  if (controllers.has(id)) return;
+  if (!spotifyAPI) {                       // API script never arrived – plain embed
+    const f = document.createElement("iframe");
+    f.title = host.dataset.label;
+    f.src = `https://open.spotify.com/embed/track/${id}?utm_source=generator`;
+    f.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+    host.replaceWith(f); controllers.set(id, null); return;
+  }
+  spotifyAPI.createController(host, { uri: `spotify:track:${id}`, width: "100%", height: 152 }, ctrl => {
+    controllers.set(id, ctrl);
+    ctrl.addListener("playback_update", e => {
+      const isPlaying = !e.data.isPaused;
+      if (isPlaying && !playing.has(id)) {
+        for (const other of playing) { controllers.get(other)?.pause(); playing.delete(other); }
+      }
+      isPlaying ? playing.add(id) : playing.delete(id);
+    });
+  });
+}
+
+const playerIO = new IntersectionObserver(entries => {
+  for (const en of entries) if (en.isIntersecting) { playerIO.unobserve(en.target); mountPlayer(en.target); }
+}, { rootMargin: "400px 0px" });
+
+function mountPlayers() {
+  document.querySelectorAll(".player > div[data-track]").forEach(h => playerIO.observe(h));
+}
+setTimeout(() => { if (!spotifyAPI) mountPlayers(); }, 4000);   // fallback if the API script is blocked
 
 // active slot in the rail
 const io = new IntersectionObserver(entries => {
