@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="de-CH">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Matcha Musik-Journey</title>
-<meta name="description" content="Track-Vorschläge für die Matcha & Friends Pre-Launch-Experience – anhören, bewerten, an Dan schicken.">
+<title>Matcha Music Journey</title>
+<meta name="description" content="Track proposals for the Matcha & Friends pre-launch experience – listen, rate, send to Dan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
@@ -22,6 +22,7 @@
     --no: #b3573f;          /* rejection – iron glaze red */
     --radius: 6px;
     --rail-w: 280px;
+    --gutter: clamp(16px, 3vw, 48px);
     --font-display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
     --font-body: "Zen Kaku Gothic New", "Hiragino Sans", "Helvetica Neue", Arial, sans-serif;
   }
@@ -37,17 +38,18 @@
     -webkit-font-smoothing: antialiased;
   }
   a { color: var(--matcha-deep); }
+  h1, h2, h3, p { margin: 0; }
 
   /* ---------- top bar ---------- */
   .topbar {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 24px; flex-wrap: wrap;
-    padding: 18px clamp(16px, 3vw, 48px);
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 24px;
+    padding: 18px var(--gutter);
     border-bottom: 1px solid var(--clay);
   }
+  @media (max-width: 800px) { .topbar { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
   .wordmark {
     font-family: var(--font-display);
     font-size: 20px; letter-spacing: 0.38em; text-transform: uppercase; font-weight: 500;
-    margin: 0;
   }
   .wordmark .to { letter-spacing: 0; margin: 0 0.15em; }
   .topbar .meta {
@@ -59,9 +61,9 @@
   .shell {
     display: grid;
     grid-template-columns: var(--rail-w) minmax(0, 1fr);
-    gap: clamp(24px, 3vw, 48px);
-    padding: 0 clamp(16px, 3vw, 48px);
-    padding-block: 32px 80px;
+    gap: var(--gutter);
+    padding: 0 var(--gutter);
+    padding-block: 32px 64px;
   }
   @media (max-width: 900px) {
     .shell { grid-template-columns: minmax(0, 1fr); }
@@ -70,28 +72,29 @@
 
   .rail {
     position: sticky; top: 24px; align-self: start;
-    display: flex; flex-direction: column; gap: 24px;
+    display: grid; gap: 28px;
   }
   .rail h2 {
-    font-family: var(--font-display); font-weight: 500; font-size: 15px;
+    font-family: var(--font-display); font-weight: 500; font-size: 14px;
     letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 10px; color: var(--clay-deep);
   }
   .timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--clay); }
   .timeline li a {
-    display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; gap: 10px; align-items: baseline;
+    display: grid; grid-template-columns: 82px minmax(0, 1fr) 32px; gap: 10px; align-items: baseline;
     padding: 8px 12px; margin-left: -2px; border-left: 2px solid transparent;
     text-decoration: none; color: var(--ink);
   }
   .timeline li a:hover, .timeline li a.active { border-left-color: var(--matcha); background: var(--foam-deep); }
   .timeline .t { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--clay-deep); white-space: nowrap; }
   .timeline .n { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.12em; }
-  .timeline .p { font-size: 12px; color: var(--clay-deep); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .timeline .p { font-size: 12px; color: var(--clay-deep); font-variant-numeric: tabular-nums; text-align: right; }
   .timeline .p.done { color: var(--matcha-deep); font-weight: 700; }
 
-  .howto { font-size: 14px; color: var(--ink); }
+  .howto { font-size: 14px; }
   .howto ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
   .legend { display: grid; gap: 6px; font-size: 13px; }
-  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend span { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 10px; align-items: center; }
+  .legend h2 { grid-column: 1 / -1; }
   .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--matcha); display: inline-block; flex: none; }
   .dot.yes { background: var(--matcha); }
   .dot.dir { background: linear-gradient(90deg, var(--matcha) 50%, transparent 50%); }
@@ -100,18 +103,18 @@
   /* ---------- intro ---------- */
   .intro {
     display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 32px; align-items: end;
-    padding-bottom: 32px; margin-bottom: 8px; border-bottom: 1px solid var(--clay);
+    padding-bottom: 32px; border-bottom: 1px solid var(--clay);
   }
   @media (max-width: 1100px) { .intro { grid-template-columns: minmax(0, 1fr); } }
   .intro h1 {
     font-family: var(--font-display); font-weight: 500; font-size: clamp(30px, 3.6vw, 46px);
-    line-height: 1.1; margin: 0 0 12px; text-wrap: balance;
+    line-height: 1.1; margin-bottom: 12px; text-wrap: balance;
   }
   .intro h1 .jp { display: block; font-size: 0.5em; letter-spacing: 0.3em; color: var(--matcha-deep); margin-bottom: 10px; }
-  .intro p { max-width: 62ch; margin: 0; }
+  .intro p { max-width: 62ch; }
   .intro .note {
     background: var(--paper); border: 1px solid var(--clay); border-radius: var(--radius);
-    padding: 16px 18px; font-size: 14px;
+    padding: 16px 18px; font-size: 14px; display: grid; gap: 8px;
   }
   .intro .note strong { font-family: var(--font-display); letter-spacing: 0.08em; }
   .field { display: grid; gap: 4px; font-size: 13px; color: var(--clay-deep); }
@@ -128,51 +131,60 @@
   .slot { padding-block: 36px; border-bottom: 1px solid var(--clay); scroll-margin-top: 16px; }
   .slot:last-of-type { border-bottom: 0; }
   .slot-head {
-    display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px 24px; align-items: baseline; margin-bottom: 20px;
+    display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 6px 24px; align-items: baseline; margin-bottom: 20px;
   }
-  @media (max-width: 700px) { .slot-head { grid-template-columns: minmax(0, 1fr); } }
   .slot-head .time { font-variant-numeric: tabular-nums; font-size: 15px; color: var(--clay-deep); letter-spacing: 0.04em; }
   .slot-head h2 {
-    font-family: var(--font-display); font-weight: 600; letter-spacing: 0.22em; font-size: 26px; margin: 0;
+    font-family: var(--font-display); font-weight: 600; letter-spacing: 0.22em; font-size: 26px; line-height: 1.1;
   }
-  .slot-head .claim { grid-column: 2; font-family: var(--font-display); font-size: 17px; margin: 0; }
-  .slot-head .ziel { grid-column: 2; font-size: 14px; color: var(--clay-deep); margin: 0; max-width: 70ch; }
-  @media (max-width: 700px) { .slot-head .claim, .slot-head .ziel { grid-column: 1; } }
+  .slot-head .claim { grid-column: 2; font-family: var(--font-display); font-size: 17px; }
+  .slot-head .ziel { grid-column: 2; font-size: 14px; color: var(--clay-deep); max-width: 80ch; }
+  @media (max-width: 700px) {
+    .slot-head { grid-template-columns: minmax(0, 1fr); }
+    .slot-head .claim, .slot-head .ziel { grid-column: 1; }
+  }
 
+  /* Track cards: one grid, every card spans the same five row tracks
+     (header / note / player / verdict / comment), so the same part sits at
+     the same height in every card of a row. */
   .tracks {
     display: grid; gap: 18px;
-    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
   .track {
     background: var(--paper); border: 1px solid var(--clay); border-radius: var(--radius);
-    display: grid; grid-template-rows: auto auto auto 1fr; gap: 12px; padding: 14px;
+    display: grid; grid-row: span 5; grid-template-rows: subgrid; row-gap: 12px; padding: 14px;
     transition: border-color .15s, box-shadow .15s;
+  }
+  @supports not (grid-template-rows: subgrid) {
+    .track { grid-template-rows: auto auto auto auto auto; }
+    .track .why { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(3 * 1.45em); }
   }
   .track[data-v="yes"] { border-color: var(--matcha); box-shadow: 0 0 0 2px var(--sencha); }
   .track[data-v="dir"] { border-color: var(--matcha); }
-  .track[data-v="no"] { border-color: var(--clay); opacity: .72; }
-  .track-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+  .track[data-v="no"] { opacity: .72; }
+
+  .track-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto; column-gap: 12px; row-gap: 2px; align-items: baseline; }
   .track .dir-tag {
-    display: inline-block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--matcha-deep); background: var(--sencha); border-radius: 3px; padding: 2px 7px; white-space: nowrap;
+    justify-self: start; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.6;
+    color: var(--matcha-deep); background: var(--sencha); border-radius: 3px; padding: 1px 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
   }
-  .track h3 { margin: 6px 0 0; font-size: 16px; font-weight: 700; line-height: 1.3; }
-  .track .artist { color: var(--clay-deep); font-size: 14px; }
   .track .len { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--clay-deep); white-space: nowrap; }
-  .track .why { margin: 0; font-size: 14px; }
+  .track h3 { font-size: 16px; font-weight: 700; line-height: 1.3; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .track .open { font-size: 12px; white-space: nowrap; }
+  .track .artist { color: var(--clay-deep); font-size: 14px; grid-column: 1 / -1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .track .why { font-size: 14px; line-height: 1.45; }
   .track iframe { width: 100%; height: 152px; border: 0; border-radius: 8px; display: block; background: var(--foam-deep); }
-  .track .open { font-size: 12px; margin-top: -6px; }
-  .verdict { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--clay); border-radius: var(--radius); overflow: hidden; }
+  .verdict { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--clay); border-radius: var(--radius); overflow: hidden; align-self: start; }
   .verdict button {
     font: inherit; font-size: 13px; padding: 8px 4px; border: 0; background: transparent; color: var(--ink); cursor: pointer;
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
   }
   .verdict button + button { border-left: 1px solid var(--clay); }
   .verdict button:hover { background: var(--foam-deep); }
   .verdict button.on { background: var(--matcha); color: #fff; }
   .verdict button.on .dot { border-color: #fff; background: #fff; }
   .verdict button[data-v="no"].on { background: var(--no); }
-  .track .comment { display: grid; gap: 4px; align-self: end; }
   .track .comment textarea { min-height: 52px; }
 
   .slot-foot {
@@ -186,8 +198,8 @@
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 24px; padding: 24px;
   }
   @media (max-width: 1000px) { .send { grid-template-columns: minmax(0, 1fr); } }
-  .send h2 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.18em; font-size: 22px; margin: 0 0 8px; }
-  .send p { margin: 0 0 16px; max-width: 55ch; }
+  .send h2 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.18em; font-size: 22px; margin-bottom: 8px; }
+  .send p { margin-bottom: 16px; max-width: 55ch; }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; }
   .btn {
     font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none;
@@ -212,40 +224,40 @@
 
 <header class="topbar">
   <h1 class="wordmark">Matcha<span class="to">と</span>Friends</h1>
-  <div class="meta">Musik-Journey · Sa 26. Sep 2026 · 09:00–13:00 · Stauffacherstr. 96, Zürich</div>
+  <div class="meta">Music Journey · Sat 26 Sep 2026 · 09:00–13:00 · Stauffacherstr. 96, Zürich</div>
 </header>
 
 <div class="shell">
   <aside class="rail">
     <div>
-      <h2>Ablauf</h2>
+      <h2>Schedule</h2>
       <ol class="timeline" id="timeline"></ol>
     </div>
     <div class="howto">
-      <h2>So geht's</h2>
+      <h2>How it works</h2>
       <ol>
-        <li>Pro Slot die Tracks kurz anhören (Play im Player, 30 s reichen).</li>
-        <li>Bei jedem Track eine der drei Bewertungen tippen, optional ein Kommentar.</li>
-        <li>Unten <em>an Dan schicken</em> – WhatsApp, Mail oder kopieren.</li>
+        <li>Per slot, listen to the tracks (press play in the player – 30 seconds is enough).</li>
+        <li>Tap one of the three ratings on each track, add a comment if you like.</li>
+        <li>At the bottom, <em>send to Dan</em> – WhatsApp, mail or copy.</li>
       </ol>
     </div>
     <div class="legend">
-      <h2>Bewertung</h2>
-      <span><i class="dot yes"></i> Genau so – diese Richtung, dieser Track</span>
-      <span><i class="dot dir"></i> Richtung stimmt – aber anderer Track</span>
-      <span><i class="dot no"></i> Nein – passt nicht zum Moment</span>
+      <h2>Ratings</h2>
+      <span><i class="dot yes"></i> Exactly this – this direction, this track</span>
+      <span><i class="dot dir"></i> Right direction – but a different track</span>
+      <span><i class="dot no"></i> No – doesn't fit the moment</span>
     </div>
   </aside>
 
   <main>
     <section class="intro">
       <div>
-        <h1><span class="jp">抹茶の日 · Pre-Launch</span>Welche Musik trägt den Morgen?</h1>
-        <p>«Ruhige Hintergrundmusik» kann vieles heissen – japanisches Ambient, Piano, Breathwork-Drones, langsamer Disco-Groove. Deshalb hier pro Slot ein paar bewusst verschiedene Richtungen. Deine Bewertung sagt mir, in welche Ecke ich für die Journey graben soll. Alles bleibt in deinem Browser gespeichert, bis du es abschickst.</p>
+        <h1><span class="jp">抹茶の日 · Pre-Launch</span>Which music carries the morning?</h1>
+        <p>"Calm background music" can mean a lot of things – Japanese ambient, solo piano, breathwork drones, slow disco grooves. So here are a few deliberately different directions per slot. Your ratings tell me which corner to dig in for the journey. Everything stays saved in your browser until you send it.</p>
       </div>
       <div class="note">
-        <strong>Dein Name</strong> (damit ich weiss, von wem die Picks kommen)
-        <label class="field" style="margin-top:8px"><input type="text" id="who" placeholder="z. B. Marko" autocomplete="name"></label>
+        <strong>Your name</strong>
+        <label class="field">so I know who the picks are from<input type="text" id="who" placeholder="e.g. Marko" autocomplete="name"></label>
       </div>
     </section>
 
@@ -253,13 +265,13 @@
 
     <section class="send" id="send">
       <div>
-        <h2>An Dan schicken</h2>
-        <p>Rechts siehst du, was rausgeht. Du kannst jederzeit nochmal schicken – die neuste Version zählt.</p>
+        <h2>Send to Dan</h2>
+        <p>On the right is exactly what goes out. You can send again any time – the latest version counts.</p>
         <div class="actions">
           <a class="btn" id="btn-wa" href="#" target="_blank" rel="noopener">WhatsApp</a>
           <a class="btn ghost" id="btn-mail" href="#">Mail</a>
-          <button class="btn ghost" id="btn-copy" type="button">Kopieren</button>
-          <button class="btn quiet" id="btn-reset" type="button">Alles zurücksetzen</button>
+          <button class="btn ghost" id="btn-copy" type="button">Copy</button>
+          <button class="btn quiet" id="btn-reset" type="button">Reset everything</button>
         </div>
         <div class="status" id="status"></div>
       </div>
@@ -268,101 +280,101 @@
   </main>
 </div>
 
-<footer>Matcha と Friends · Musik: Dan · Vorschläge sind Startpunkte, keine Setlist</footer>
+<footer>Matcha と Friends · Music: Dan · These are starting points, not a setlist</footer>
 
 <script>
-// ---- Kontakt (leer lassen = WhatsApp öffnet den Chat-Picker, Mail ohne Empfänger) ----
-const DAN_WHATSAPP = "";     // z. B. "41791234567" (ohne + und Leerzeichen)
-const DAN_EMAIL = "";        // z. B. "dan@example.ch"
+// ---- Contact (leave empty = WhatsApp opens the chat picker, mail without recipient) ----
+const DAN_WHATSAPP = "";     // e.g. "41791234567" (no + and no spaces)
+const DAN_EMAIL = "";        // e.g. "dan@example.ch"
 
 const SLOTS = [
   {
     key: "arrive", name: "Arrive", time: "09:00–09:30",
-    claim: "Ankommen. Entschleunigen. Willkommen sein.",
-    ziel: "Persönliche Begrüssung, Welcome Drink, Palo Santo. Die Musik darf da sein, aber niemanden ansprechen – erste Gespräche müssen leicht bleiben.",
+    claim: "Arrive. Slow down. Be welcome.",
+    ziel: "Personal welcome, welcome drink, palo santo. The music may be present but must not address anyone – first conversations have to stay light.",
     tracks: [
-      { id: "1osR4MmVEDVk2FXw5xr5Xv", title: "Green", artist: "Hiroshi Yoshimura", len: "5:14", dir: "Japanisches Ambient",
-        why: "1986, Kankyō-Ongaku – Musik, die Tokioter Bürohäuser und Museen leise gemacht hat. Heisst buchstäblich «Grün»." },
-      { id: "5RqKo9P4DLA0bVyY70cWkr", title: "saman", artist: "Ólafur Arnalds", len: "2:11", dir: "Piano · Neoklassik",
-        why: "Warmes Klavier mit Raum. Die «Yoga-Studio»-Richtung, aber ohne Kitsch." },
-      { id: "2MIavWMdvbYuRoA2Cw6VkN", title: "August 10", artist: "Khruangbin", len: "4:25", dir: "Organischer Slow-Groove",
-        why: "Bass, Gitarre, Besen-Schlagzeug. Bewegung ohne Beat-Druck – falls der Morgen etwas Körper haben darf." },
-      { id: "3jQyadhLTxpxadQlkFh2b8", title: "Heartbeats", artist: "José González", len: "2:40", dir: "Akustisch · Stimme",
-        why: "Test, ob Gesang beim Ankommen stört oder wärmt. Sehr leise, sehr nah." },
+      { id: "1osR4MmVEDVk2FXw5xr5Xv", title: "Green", artist: "Hiroshi Yoshimura", len: "5:14", dir: "Japanese ambient",
+        why: "1986, kankyō ongaku – the music that made Tokyo office lobbies and museums quiet. Literally called \"Green\"." },
+      { id: "5RqKo9P4DLA0bVyY70cWkr", title: "saman", artist: "Ólafur Arnalds", len: "2:11", dir: "Piano · neoclassical",
+        why: "Warm piano with room around it. The yoga-studio direction, without the kitsch." },
+      { id: "2MIavWMdvbYuRoA2Cw6VkN", title: "August 10", artist: "Khruangbin", len: "4:25", dir: "Organic slow groove",
+        why: "Bass, guitar, brushed drums. Movement without beat pressure – in case the morning is allowed some body." },
+      { id: "3jQyadhLTxpxadQlkFh2b8", title: "Heartbeats", artist: "José González", len: "2:40", dir: "Acoustic · voice",
+        why: "A test: does a singing voice disturb or warm the arrival? Very quiet, very close." },
     ],
   },
   {
     key: "see", name: "See", time: "09:30–10:00",
-    claim: "Matcha & Friends wird gesehen.",
-    ziel: "Ansprachen von Morena und Marko. Die Musik liegt unter Stimmen: kein Puls, keine Melodie, die Aufmerksamkeit zieht – oder ganz aus, sobald jemand spricht.",
+    claim: "Matcha & Friends is seen.",
+    ziel: "Speeches by Morena and Marko. The music sits under voices: no pulse, no melody that pulls attention – or off entirely while someone speaks.",
     tracks: [
-      { id: "3bCmDqflFBHijgJfvtqev5", title: "1/1", artist: "Brian Eno", len: "17:21", dir: "Pures Ambient",
-        why: "Music for Airports. 17 Minuten, die unter Gesprochenem verschwinden und trotzdem den Raum halten." },
-      { id: "25zykbJGBYXYjnq5VyhO3N", title: "Ambre", artist: "Nils Frahm", len: "3:47", dir: "Solo-Piano",
-        why: "Intimes Klavier, fast geflüstert. Für die Momente zwischen zwei Rednern." },
-      { id: "2DuFmqmY2DatBTiWz2tXcF", title: "andata", artist: "Ryuichi Sakamoto", len: "4:38", dir: "Piano · Orgel · Japan",
-        why: "Feierlich, langsam, japanisch. Passt zu «Thank You and Outlook»." },
-      { id: "4sQBgAPX981djCcsjDJvQx", title: "Glass", artist: "Hania Rani", len: "4:30", dir: "Piano mit Puls",
-        why: "Gegenprobe: etwas mehr Bewegung. Zu viel für unter Ansprachen, oder genau richtig als Übergang?" },
+      { id: "3bCmDqflFBHijgJfvtqev5", title: "1/1", artist: "Brian Eno", len: "17:21", dir: "Pure ambient",
+        why: "Music for Airports. 17 minutes that disappear under speech and still hold the room." },
+      { id: "25zykbJGBYXYjnq5VyhO3N", title: "Ambre", artist: "Nils Frahm", len: "3:47", dir: "Solo piano",
+        why: "Intimate piano, almost whispered. For the moments between two speakers." },
+      { id: "2DuFmqmY2DatBTiWz2tXcF", title: "andata", artist: "Ryuichi Sakamoto", len: "4:38", dir: "Piano · organ · Japan",
+        why: "Solemn, slow, Japanese. Fits \"Thank You and Outlook\"." },
+      { id: "4sQBgAPX981djCcsjDJvQx", title: "Glass", artist: "Hania Rani", len: "4:30", dir: "Piano with pulse",
+        why: "Counter-probe: a bit more motion. Too much under speeches, or exactly right as a transition?" },
     ],
   },
   {
     key: "breathe", name: "Breathe", time: "10:00–10:30",
-    claim: "Präsenz kultivieren.",
-    ziel: "Breathwork mit Morena. Nervensystem regulieren, im Moment ankommen. Falls Morena eigene Musik mitbringt, sind das nur Vorschläge – sonst: lange, tiefe Stücke ohne Bruch.",
+    claim: "Cultivating presence.",
+    ziel: "Breathwork with Morena. Regulate the nervous system, arrive in the moment. If Morena brings her own music these are just proposals – otherwise: long, deep pieces without breaks.",
     tracks: [
-      { id: "5aGcszkgFp1DOnxziXZrUw", title: "Singing Bowl (Ascension)", artist: "Jon Hopkins", len: "20:53", dir: "Klangschale · Drone",
-        why: "Eine Klangschale, 21 Minuten. Gemacht für genau so eine Session – trägt eine ganze Breathwork-Runde." },
-      { id: "4ZknuVR2jOpMOcfwWpsuEr", title: "An Ending (Ascent)", artist: "Brian Eno", len: "4:24", dir: "Schwebend · Hell",
-        why: "Der Klassiker fürs Loslassen. Kein Rhythmus, nur Auftrieb." },
-      { id: "3Z9PWaE8d55XcOxEHwx6U8", title: "Meditation No. 1", artist: "Laraaji & Brian Eno", len: "18:47", dir: "Zither · Schimmer",
-        why: "Day of Radiance. Flirrende Zither, wärmer und organischer als reine Synth-Drones." },
-      { id: "6eZLzv6MRsFPjJhmhkK8qC", title: "Possible", artist: "East Forest", len: "5:57", dir: "Ceremony-Sound · sanfter Puls",
-        why: "Die Richtung, die Breathwork-Facilitators oft selbst spielen: leiser Puls, Atem-Tempo." },
+      { id: "5aGcszkgFp1DOnxziXZrUw", title: "Singing Bowl (Ascension)", artist: "Jon Hopkins", len: "20:53", dir: "Singing bowl · drone",
+        why: "One singing bowl, 21 minutes. Made for exactly this kind of session – carries a whole breathwork round." },
+      { id: "4ZknuVR2jOpMOcfwWpsuEr", title: "An Ending (Ascent)", artist: "Brian Eno", len: "4:24", dir: "Floating · bright",
+        why: "The classic for letting go. No rhythm, only lift." },
+      { id: "3Z9PWaE8d55XcOxEHwx6U8", title: "Meditation No. 1", artist: "Laraaji & Brian Eno", len: "18:47", dir: "Zither · shimmer",
+        why: "Day of Radiance. Shimmering zither, warmer and more organic than pure synth drones." },
+      { id: "6eZLzv6MRsFPjJhmhkK8qC", title: "Possible", artist: "East Forest", len: "5:57", dir: "Ceremony sound · soft pulse",
+        why: "The direction breathwork facilitators often play themselves: a quiet pulse at breathing tempo." },
     ],
   },
   {
     key: "feel", name: "Feel", time: "10:30–11:00",
-    claim: "Den bewussten Umgang mit und hinter Matcha spüren.",
-    ziel: "Workshop «Wie über Was» mit Marko – Ursprung und Bedeutung von Matcha, japanische Teekultur. Hier darf die Musik am deutlichsten japanisch sein, ohne Klischee zu werden.",
+    claim: "Feeling the mindful practice behind matcha.",
+    ziel: "Workshop \"How over What\" with Marko – origin and meaning of matcha, Japanese tea culture. Here the music may be most clearly Japanese, without becoming a cliché.",
     tracks: [
-      { id: "6TbAGuSArjhdMnPYFtFWA9", title: "Tsuru no Sugomori", artist: "Rodrigo Rodriguez (Shakuhachi)", len: "5:13", dir: "Shakuhachi · traditionell",
-        why: "Bambusflöte, Honkyoku-Stück. Die Zen-Wurzel der Teezeremonie – so klingt das Original." },
-      { id: "6qsZP3u6wkeRDFd4GiLLOg", title: "Tobiume", artist: "Susumu Yokota", len: "4:38", dir: "Japanisches Ambient · Koto-Textur",
-        why: "Album «Sakura». Japanische Klangfarben, modern gefasst – traditionell ohne Museum." },
+      { id: "6TbAGuSArjhdMnPYFtFWA9", title: "Tsuru no Sugomori", artist: "Rodrigo Rodriguez (shakuhachi)", len: "5:13", dir: "Shakuhachi · traditional",
+        why: "Bamboo flute, a honkyoku piece. The Zen root of the tea ceremony – this is what the original sounds like." },
+      { id: "6qsZP3u6wkeRDFd4GiLLOg", title: "Tobiume", artist: "Susumu Yokota", len: "4:38", dir: "Japanese ambient · koto texture",
+        why: "From the album \"Sakura\". Japanese timbres in a modern frame – traditional without the museum." },
       { id: "5relTzF9GcxxTF0D4Id6uo", title: "Aqua", artist: "Ryuichi Sakamoto", len: "4:41", dir: "Piano · still",
-        why: "Sakamotos ruhigstes Stück, Solo-Aufnahme 2020. Wasser, Teeschale, Stille." },
-      { id: "1IEN6uB8gSG7DAoqZV8cNg", title: "Porcelain", artist: "Ichiko Aoba", len: "4:29", dir: "Japanischer Folk · Stimme",
-        why: "Gitarre und Stimme aus Okinawa. Test: darf im Workshop jemand singen?" },
-      { id: "23HUlzt20YuALl5Q2gWsKu", title: "Summer", artist: "Joe Hisaishi", len: "6:24", dir: "Warm · bekannt",
-        why: "Kikujiro-Soundtrack. Sehr bekannt, sehr freundlich – Gegenprobe, ob Wiedererkennung hilft oder ablenkt." },
+        why: "Sakamoto's quietest piece, solo recording from 2020. Water, tea bowl, silence." },
+      { id: "1IEN6uB8gSG7DAoqZV8cNg", title: "Porcelain", artist: "Ichiko Aoba", len: "4:29", dir: "Japanese folk · voice",
+        why: "Guitar and voice from Okinawa. A test: may someone sing during the workshop?" },
+      { id: "23HUlzt20YuALl5Q2gWsKu", title: "Summer", artist: "Joe Hisaishi", len: "6:24", dir: "Warm · well known",
+        why: "Kikujiro soundtrack. Very familiar, very friendly – counter-probe whether recognition helps or distracts." },
     ],
   },
   {
     key: "taste", name: "Taste", time: "11:00–13:00",
-    claim: "Gemeinsam Matcha Brunch geniessen.",
-    ziel: "Zwei Stunden Brunch von Martina. Jetzt darf die Musik Gespräche tragen statt nur Raum halten: Groove, Gesang, Sonntagsgefühl – aber nie so laut, dass man näher rücken muss.",
+    claim: "Enjoying the matcha brunch together.",
+    ziel: "Two hours of brunch by Martina. Now the music may carry conversations instead of just holding the room: groove, voices, Sunday feeling – but never so loud that people have to lean in.",
     tracks: [
-      { id: "24ntSW3QVJzR79lHAAOTaY", title: "Texas Sun", artist: "Khruangbin & Leon Bridges", len: "4:12", dir: "Organischer Groove · Stimme",
-        why: "Sonne, Bass, samtige Stimme. Der Brunch-Standard, gegen den sich alles andere messen muss." },
-      { id: "41uKtGDrKwZZBwLfQzlMYN", title: "Love Love Love", artist: "Low Motion Disco", len: "6:01", dir: "Slow Disco · Balearic",
-        why: "Die Low-Motion-Disco-Richtung wörtlich: 100 BPM, Gitarre, Schweben. Tagsüber Disco ohne Club." },
-      { id: "35U4PXL3W3XIkAjEUdhr36", title: "Harvest Moon", artist: "Poolside", len: "6:08", dir: "Daytime Disco · Cover",
-        why: "Neil Young als Poolside-Cover. Bekannt genug zum Mitsummen, langsam genug zum Essen." },
-      { id: "2CuUB5MbfRShtunR8g5hjR", title: "Ylang Ylang", artist: "FKJ", len: "3:33", dir: "Lo-fi Soul · Piano",
-        why: "Klavier, Bass, ein bisschen Staub. Zwischen den Gängen, wenn es wieder ruhiger werden darf." },
-      { id: "75IQVo8hqI1iwVZyvkN2VT", title: "Show Me How", artist: "Men I Trust", len: "3:35", dir: "Dream-Pop · Stimme",
-        why: "Weiche Stimme, weicher Bass. Etwas jünger und näher am Café als am Wellness." },
-      { id: "6G6M4fl2I0eqEQnzyTwR8m", title: "You Wish", artist: "Nightmares On Wax", len: "3:30", dir: "Downtempo · Sonntag",
-        why: "Der Sonntagmorgen-Klassiker. Hip-Hop-Puls in Zeitlupe, dazu Streicher." },
-      { id: "7rU6Iebxzlvqy5t857bKFq", title: "Plastic Love", artist: "Mariya Takeuchi", len: "4:54", dir: "City Pop · Japan 1984",
-        why: "Augenzwinkern: japanischer Pop-Klassiker. Zu viel? Oder genau der Moment, in dem der Brunch lacht?" },
+      { id: "24ntSW3QVJzR79lHAAOTaY", title: "Texas Sun", artist: "Khruangbin & Leon Bridges", len: "4:12", dir: "Organic groove · voice",
+        why: "Sun, bass, a velvet voice. The brunch standard everything else has to measure up to." },
+      { id: "41uKtGDrKwZZBwLfQzlMYN", title: "Love Love Love", artist: "Low Motion Disco", len: "6:01", dir: "Slow disco · Balearic",
+        why: "The low-motion-disco direction, literally: 100 BPM, guitar, floating. Daytime disco without the club." },
+      { id: "35U4PXL3W3XIkAjEUdhr36", title: "Harvest Moon", artist: "Poolside", len: "6:08", dir: "Daytime disco · cover",
+        why: "Neil Young as a Poolside cover. Familiar enough to hum along, slow enough to eat to." },
+      { id: "2CuUB5MbfRShtunR8g5hjR", title: "Ylang Ylang", artist: "FKJ", len: "3:33", dir: "Lo-fi soul · piano",
+        why: "Piano, bass, a little dust. Between courses, when it may get quieter again." },
+      { id: "75IQVo8hqI1iwVZyvkN2VT", title: "Show Me How", artist: "Men I Trust", len: "3:35", dir: "Dream pop · voice",
+        why: "Soft voice, soft bass. A bit younger and closer to café than to wellness." },
+      { id: "6G6M4fl2I0eqEQnzyTwR8m", title: "You Wish", artist: "Nightmares On Wax", len: "3:30", dir: "Downtempo · Sunday",
+        why: "The Sunday-morning classic. Hip-hop pulse in slow motion, strings on top." },
+      { id: "7rU6Iebxzlvqy5t857bKFq", title: "Plastic Love", artist: "Mariya Takeuchi", len: "4:54", dir: "City pop · Japan 1984",
+        why: "A wink: the Japanese pop classic. Too much? Or exactly the moment the brunch starts laughing?" },
     ],
   },
 ];
 
 const STORE = "matcha-journey-v1";
-const V_LABEL = { yes: "Genau so", dir: "Richtung stimmt", no: "Nein" };
+const V_LABEL = { yes: "Exactly this", dir: "Right direction", no: "No" };
 const V_MARK = { yes: "✓", dir: "~", no: "✗" };
 
 let state = load();
@@ -403,36 +415,32 @@ function renderSlots() {
           const tv = state.tracks[t.id] || {};
           return `
           <article class="track" id="track-${t.id}" data-v="${tv.v || ""}">
-            <div class="track-top">
-              <div>
-                <span class="dir-tag">${esc(t.dir)}</span>
-                <h3>${esc(t.title)}</h3>
-                <div class="artist">${esc(t.artist)}</div>
-              </div>
+            <div class="track-head">
+              <span class="dir-tag">${esc(t.dir)}</span>
               <span class="len">${t.len}</span>
+              <h3 title="${esc(t.title)}">${esc(t.title)}</h3>
+              <a class="open" href="https://open.spotify.com/track/${t.id}" target="_blank" rel="noopener">Open in Spotify ↗</a>
+              <div class="artist" title="${esc(t.artist)}">${esc(t.artist)}</div>
             </div>
             <p class="why">${esc(t.why)}</p>
-            <div>
-              <iframe title="${esc(t.artist)} – ${esc(t.title)}" src="https://open.spotify.com/embed/track/${t.id}?utm_source=generator" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-              <div class="open"><a href="https://open.spotify.com/track/${t.id}" target="_blank" rel="noopener">In Spotify öffnen ↗</a></div>
+            <iframe title="${esc(t.artist)} – ${esc(t.title)}" src="https://open.spotify.com/embed/track/${t.id}?utm_source=generator" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+            <div class="verdict" role="group" aria-label="Rating for ${esc(t.title)}">
+              <button type="button" data-track="${t.id}" data-v="yes" class="${tv.v === "yes" ? "on" : ""}"><i class="dot yes"></i>Exactly this</button>
+              <button type="button" data-track="${t.id}" data-v="dir" class="${tv.v === "dir" ? "on" : ""}"><i class="dot dir"></i>Direction</button>
+              <button type="button" data-track="${t.id}" data-v="no" class="${tv.v === "no" ? "on" : ""}"><i class="dot no"></i>No</button>
             </div>
-            <div class="verdict" role="group" aria-label="Bewertung ${esc(t.title)}">
-              <button type="button" data-track="${t.id}" data-v="yes" class="${tv.v === "yes" ? "on" : ""}"><i class="dot yes"></i>Genau so</button>
-              <button type="button" data-track="${t.id}" data-v="dir" class="${tv.v === "dir" ? "on" : ""}"><i class="dot dir"></i>Richtung</button>
-              <button type="button" data-track="${t.id}" data-v="no" class="${tv.v === "no" ? "on" : ""}"><i class="dot no"></i>Nein</button>
-            </div>
-            <label class="comment field">Kommentar
-              <textarea id="c-${t.id}" data-track="${t.id}" placeholder="z. B. «mehr davon, aber ohne Gesang»">${esc(tv.c || "")}</textarea>
+            <label class="comment field">Comment
+              <textarea id="c-${t.id}" data-track="${t.id}" placeholder="e.g. &quot;more of this, but without vocals&quot;">${esc(tv.c || "")}</textarea>
             </label>
           </article>`;
         }).join("")}
       </div>
       <div class="slot-foot">
-        <label class="field">Notiz zum ganzen Slot
-          <textarea id="n-${s.key}" data-slot="${s.key}" data-f="note" placeholder="Wie soll sich dieser Moment anfühlen? Was fehlt in den Vorschlägen?">${esc(sl.note || "")}</textarea>
+        <label class="field">Note on the whole slot
+          <textarea id="n-${s.key}" data-slot="${s.key}" data-f="note" placeholder="How should this moment feel? What's missing from the proposals?">${esc(sl.note || "")}</textarea>
         </label>
-        <label class="field">Eigene Idee (Track, Artist oder Spotify-Link)
-          <textarea id="o-${s.key}" data-slot="${s.key}" data-f="own" placeholder="Alles, was dir dazu einfällt">${esc(sl.own || "")}</textarea>
+        <label class="field">Your own idea (track, artist or Spotify link)
+          <textarea id="o-${s.key}" data-slot="${s.key}" data-f="own" placeholder="Anything that comes to mind">${esc(sl.own || "")}</textarea>
         </label>
       </div>
     </section>`;
@@ -450,8 +458,8 @@ function renderProgress() {
 
 function buildSummary() {
   const lines = [];
-  lines.push(`Matcha Musik-Journey – Picks von ${state.who?.trim() || "(kein Name)"}`);
-  lines.push(`Stand: ${new Date().toLocaleString("de-CH", { dateStyle: "medium", timeStyle: "short" })}`);
+  lines.push(`Matcha Music Journey – picks from ${state.who?.trim() || "(no name)"}`);
+  lines.push(`As of: ${new Date().toLocaleString("en-CH", { dateStyle: "medium", timeStyle: "short" })}`);
   for (const s of SLOTS) {
     lines.push("", `${s.name.toUpperCase()} ${s.time}`);
     let any = false;
@@ -461,15 +469,15 @@ function buildSummary() {
       any = true;
       let l = `  ${tv.v ? V_MARK[tv.v] : "·"} ${t.artist} – ${t.title}`;
       if (tv.v) l += ` (${V_LABEL[tv.v]})`;
-      if (tv.c?.trim()) l += ` — «${tv.c.trim()}»`;
+      if (tv.c?.trim()) l += ` — "${tv.c.trim()}"`;
       lines.push(l);
     }
-    if (!any) lines.push("  (noch nichts bewertet)");
+    if (!any) lines.push("  (nothing rated yet)");
     const sl = state.slots[s.key] || {};
-    if (sl.note?.trim()) lines.push(`  Notiz: ${sl.note.trim()}`);
-    if (sl.own?.trim()) lines.push(`  Eigene Idee: ${sl.own.trim()}`);
+    if (sl.note?.trim()) lines.push(`  Note: ${sl.note.trim()}`);
+    if (sl.own?.trim()) lines.push(`  Own idea: ${sl.own.trim()}`);
   }
-  lines.push("", "✓ genau so · ~ Richtung stimmt · ✗ nein");
+  lines.push("", "✓ exactly this · ~ right direction · ✗ no");
   return lines.join("\n");
 }
 
@@ -478,7 +486,7 @@ function renderSummary() {
   document.getElementById("summary").textContent = text;
   const enc = encodeURIComponent(text);
   document.getElementById("btn-wa").href = `https://wa.me/${DAN_WHATSAPP}?text=${enc}`;
-  document.getElementById("btn-mail").href = `mailto:${DAN_EMAIL}?subject=${encodeURIComponent("Matcha Musik-Journey – meine Picks")}&body=${enc}`;
+  document.getElementById("btn-mail").href = `mailto:${DAN_EMAIL}?subject=${encodeURIComponent("Matcha Music Journey – my picks")}&body=${enc}`;
 }
 
 // ---- events ----
@@ -504,12 +512,12 @@ document.addEventListener("input", e => {
 
 document.getElementById("btn-copy").addEventListener("click", async () => {
   const st = document.getElementById("status");
-  try { await navigator.clipboard.writeText(buildSummary()); st.textContent = "Kopiert – jetzt irgendwo an Dan einfügen."; }
-  catch { st.textContent = "Kopieren ging nicht – markiere den Text rechts und kopiere ihn von Hand."; }
+  try { await navigator.clipboard.writeText(buildSummary()); st.textContent = "Copied – now paste it anywhere Dan can read it."; }
+  catch { st.textContent = "Copy didn't work – select the text on the right and copy it by hand."; }
 });
 
 document.getElementById("btn-reset").addEventListener("click", () => {
-  if (!confirm("Wirklich alle Bewertungen und Kommentare löschen?")) return;
+  if (!confirm("Really delete all ratings and comments?")) return;
   state = { who: state.who, tracks: {}, slots: {} };
   try { localStorage.setItem(STORE, JSON.stringify(state)); } catch {}
   renderSlots(); renderProgress(); renderSummary();
