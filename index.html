@@ -116,10 +116,16 @@
 
   /* ---------- spotify login notice ---------- */
   .notice {
-    display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 18px; align-items: start;
+    display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 18px; align-items: start;
     background: var(--washi); border: 2px solid var(--seal); border-radius: var(--radius);
     padding: 16px 20px; margin-bottom: 28px;
   }
+  .notice[hidden] { display: none; }
+  .notice-close {
+    font: 22px/1 var(--font-body); color: var(--clay-deep); background: transparent; border: 0; cursor: pointer;
+    width: 32px; height: 32px; border-radius: var(--radius); margin: -6px -8px 0 0;
+  }
+  .notice-close:hover { background: var(--foam-deep); color: var(--ink); }
   .notice-mark {
     width: 44px; height: 44px; border-radius: 6px; background: var(--seal); color: #fff;
     display: grid; place-items: center; font-family: var(--font-display); font-weight: 600; font-size: 26px; line-height: 1;
@@ -317,6 +323,7 @@
         <h2 id="notice-title">Log in to Spotify in this browser first</h2>
         <p id="notice-text">Logged out, the players only give a 30-second preview – and Spotify picks that clip, often from the wrong part of the track. Logged in, every player plays the <strong>full track</strong> and you can scrub. Sign in once at <a href="https://open.spotify.com" target="_blank" rel="noopener">open.spotify.com ↗</a>, then come back here and reload.</p>
       </div>
+      <button class="notice-close" id="notice-close" type="button" aria-label="Close this message" title="Close">×</button>
     </aside>
     <section class="intro">
       <div>
@@ -691,6 +698,16 @@ function mountPlayer(host) {
 
 // Notice at the top: red "log in" until a player proves full-length playback.
 const LOGIN_KEY = "matcha-journey-spotify-full";
+const NOTICE_KEY = "matcha-journey-notice-dismissed";
+function noticeVariant() { const n = document.getElementById("notice"); return n.classList.contains("ok") ? "ok" : n.classList.contains("phone") ? "phone" : "login"; }
+function applyNoticeDismissal() {
+  let d = null; try { d = localStorage.getItem(NOTICE_KEY); } catch {}
+  document.getElementById("notice").hidden = d === noticeVariant();
+}
+document.getElementById("notice-close").addEventListener("click", () => {
+  try { localStorage.setItem(NOTICE_KEY, noticeVariant()); } catch {}
+  document.getElementById("notice").hidden = true;
+});
 function setSpotifyLogin(full) {
   const n = document.getElementById("notice");
   if (n.classList.contains("ok") === full) return;
@@ -701,6 +718,7 @@ function setSpotifyLogin(full) {
     ? "Every player plays the whole track and you can scrub to any point. If a player ever shows a <strong>Preview</strong> pill again, the login has expired – sign in at <a href=\"https://open.spotify.com\" target=\"_blank\" rel=\"noopener\">open.spotify.com ↗</a> and reload."
     : "Logged out, the players only give a 30-second preview – and Spotify picks that clip, often from the wrong part of the track. Logged in, every player plays the <strong>full track</strong> and you can scrub. Sign in once at <a href=\"https://open.spotify.com\" target=\"_blank\" rel=\"noopener\">open.spotify.com ↗</a>, then come back here and reload.";
   try { localStorage.setItem(LOGIN_KEY, full ? "1" : "0"); } catch {}
+  applyNoticeDismissal();
 }
 try { if (localStorage.getItem(LOGIN_KEY) === "1") setSpotifyLogin(true); } catch {}
 
@@ -714,6 +732,7 @@ if (onPhone && !document.getElementById("notice").classList.contains("ok")) {
   document.getElementById("notice-title").textContent = "On a phone you only get 30-second previews";
   document.getElementById("notice-text").innerHTML = "Spotify's player in a mobile browser can't play full tracks, even when you're logged in – the preview is all it gives, and Spotify picks that clip. To hear a whole track, tap <strong>Open in Spotify</strong> on the card (opens the app). For full tracks right here on the page, open this link on a laptop or desktop browser where you're logged into Spotify.";
 }
+applyNoticeDismissal();
 
 const playerIO = new IntersectionObserver(entries => {
   for (const en of entries) if (en.isIntersecting) { playerIO.unobserve(en.target); mountPlayer(en.target); }
