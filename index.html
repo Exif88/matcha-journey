@@ -278,6 +278,22 @@
     max-height: 420px; overflow-y: auto; color: var(--ink);
   }
   footer { text-align: center; font-size: 12px; color: var(--clay-deep); padding: 24px; letter-spacing: 0.06em; }
+  /* ---------- review mode (?review): someone's sent picks, read-only ---------- */
+  .review-banner {
+    display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 18px; align-items: center;
+    background: var(--washi); border: 2px solid var(--matcha-deep); border-radius: var(--radius);
+    padding: 16px 20px; margin-bottom: 28px;
+  }
+  .review-banner .notice-mark { background: var(--matcha-deep); }
+  .review-banner h2 { margin: 0 0 4px; font: 600 17px/1.3 var(--font-display); letter-spacing: 0.02em; }
+  .review-banner p { margin: 0; font-size: 14px; color: var(--clay-deep); }
+  .review-banner a.btn { white-space: nowrap; }
+  body.review .verdict button, body.review textarea, body.review #who { pointer-events: none; }
+  body.review textarea, body.review #who { background: transparent; }
+  body.review .verdict button:not(.on) { opacity: 0.35; }
+  body.review .track:not([data-v=""]) { box-shadow: 0 0 0 2px var(--matcha) inset; }
+  body.review #btn-reset, body.review #btn-reset-top, body.review .send .actions, body.review .send p { display: none; }
+  body.review .howto { display: none; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -317,6 +333,14 @@
   </aside>
 
   <main>
+    <aside class="review-banner" id="review-banner" hidden>
+      <div class="notice-mark">✓</div>
+      <div>
+        <h2 id="review-title"></h2>
+        <p id="review-text"></p>
+      </div>
+      <a class="btn ghost" href="./">Back to the rating page</a>
+    </aside>
     <aside class="notice" role="note" id="notice">
       <div class="notice-mark" id="notice-mark">!</div>
       <div>
@@ -494,18 +518,59 @@ const SLOTS = [
   },
 ];
 
+// ---- sent picks, pasted back in so they can be viewed on the page (?review or ?review=<key>) ----
+const RESPONSES = {
+  round1: {
+    label: "Round 1", who: "(no name)", asOf: "18 Sept 2026, 14:40",
+    who_note: "sent without a name",
+    tracks: {
+      // Arrive
+      "1osR4MmVEDVk2FXw5xr5Xv": { v: "no" },    // Hiroshi Yoshimura – Green
+      "5RqKo9P4DLA0bVyY70cWkr": { v: "no" },    // Ólafur Arnalds – saman
+      "2MIavWMdvbYuRoA2Cw6VkN": { v: "yes" },   // Khruangbin – August 10
+      "3jQyadhLTxpxadQlkFh2b8": { v: "dir" },   // José González – Heartbeats
+      "25lTenJPmSfwCRZi2hjCcB": { v: "no" },    // Andrew Prahlow – Outer Wilds
+      "0cnqrpIwbHIyxJh4G0UCiV": { v: "no" },    // DOPE LEMON – Where Is It You Go
+      "4Y2W4zKa3q72ztbkA0r8Va": { v: "dir" },   // Boards of Canada – Dayvan Cowboy
+      "488E8BWYDCDrL6vunOAzPy": { v: "no" },    // Thievery Corporation – Lebanese Blonde
+      "6UnfPP7ChYwQ2h3uTduRA6": { v: "no" },    // Ajja – Stage Left
+      // See
+      "3bCmDqflFBHijgJfvtqev5": { v: "no" },    // Brian Eno – 1/1
+      "25zykbJGBYXYjnq5VyhO3N": { v: "no" },    // Nils Frahm – Ambre
+      "2DuFmqmY2DatBTiWz2tXcF": { v: "no" },    // Ryuichi Sakamoto – andata
+      "4sQBgAPX981djCcsjDJvQx": { v: "no" },    // Hania Rani – Glass
+      // Taste
+      "24ntSW3QVJzR79lHAAOTaY": { v: "dir" },   // Khruangbin & Leon Bridges – Texas Sun
+      "5PjwpUcHx1zvnMDmQHhFU4": { v: "dir" },   // Low Motion Disco – Things Are Gonna Get Easier
+      "2CuUB5MbfRShtunR8g5hjR": { v: "no" },    // FKJ – Ylang Ylang
+      "75IQVo8hqI1iwVZyvkN2VT": { v: "no" },    // Men I Trust – Show Me How
+      "6G6M4fl2I0eqEQnzyTwR8m": { v: "dir" },   // Nightmares On Wax – You Wish
+      "0pVEx8AcTpuK4OYXziesGF": { v: "dir" },   // Bobby Womack – California Dreamin'
+      "3ZzhV6JIDKWvWR7wiKWD0C": { v: "dir" },   // Air – La femme d'argent
+    },
+    slots: {
+      see:  { note: "*happy* ambient" },
+      feel: { note: "happy ambient" },
+    },
+  },
+};
+const reviewKey = new URLSearchParams(location.search).get("review");
+const REVIEW = reviewKey === null ? null : (RESPONSES[reviewKey || "round1"] || null);
+
 const STORE = "matcha-journey-v1";
 const V_LABEL = { yes: "Exactly this", dir: "Right direction", no: "No" };
 const V_MARK = { yes: "✓", dir: "~", no: "✗" };
 
 let state = load();
 function load() {
+  if (REVIEW) return { who: REVIEW.who, tracks: structuredClone(REVIEW.tracks), slots: structuredClone(REVIEW.slots) };
   try { return JSON.parse(localStorage.getItem(STORE)) || { who: "", tracks: {}, slots: {} }; }
   catch { return { who: "", tracks: {}, slots: {} }; }
 }
 let saveTimer;
 function persist() {
   clearTimeout(saveTimer);
+  if (REVIEW) return;                      // viewing someone's picks – never write them over the local draft
   try {
     localStorage.setItem(STORE, JSON.stringify(state));
     document.getElementById("saved").textContent = "Saved in this browser · " + new Date().toLocaleTimeString("en-CH", { hour: "2-digit", minute: "2-digit" });
@@ -595,7 +660,7 @@ function renderProgress() {
 function buildSummary() {
   const lines = [];
   lines.push(`Matcha Music Journey – picks from ${state.who?.trim() || "(no name)"}`);
-  lines.push(`As of: ${new Date().toLocaleString("en-CH", { dateStyle: "medium", timeStyle: "short" })}`);
+  lines.push(`As of: ${REVIEW ? REVIEW.asOf : new Date().toLocaleString("en-CH", { dateStyle: "medium", timeStyle: "short" })}`);
   for (const s of SLOTS) {
     lines.push("", `${s.name.toUpperCase()} ${s.time}`);
     let any = false;
@@ -701,6 +766,7 @@ const LOGIN_KEY = "matcha-journey-spotify-full";
 const NOTICE_KEY = "matcha-journey-notice-dismissed";
 function noticeVariant() { const n = document.getElementById("notice"); return n.classList.contains("ok") ? "ok" : n.classList.contains("phone") ? "phone" : "login"; }
 function applyNoticeDismissal() {
+  if (REVIEW) { document.getElementById("notice").hidden = true; return; }
   let d = null; try { d = localStorage.getItem(NOTICE_KEY); } catch {}
   document.getElementById("notice").hidden = d === noticeVariant();
 }
@@ -754,7 +820,16 @@ const io = new IntersectionObserver(entries => {
 renderTimeline();
 renderSlots();
 document.getElementById("who").value = state.who || "";
-if (Object.keys(state.tracks).length || Object.keys(state.slots).length) document.getElementById("saved").textContent = "Restored from this browser";
+if (REVIEW) {
+  document.body.classList.add("review");
+  const rated = Object.values(REVIEW.tracks).filter(t => t.v).length;
+  document.getElementById("review-title").textContent = `${REVIEW.label} · picks from ${REVIEW.who} · sent ${REVIEW.asOf}`;
+  document.getElementById("review-text").textContent = `Read-only view of what came back: ${rated} tracks rated, notes under each slot. Nothing you see here is saved in this browser, and your own draft stays untouched.`;
+  document.getElementById("review-banner").hidden = false;
+  document.getElementById("notice").hidden = true;
+  document.getElementById("saved").textContent = `Viewing ${REVIEW.label} picks`;
+  document.querySelectorAll("textarea, #who").forEach(el => el.readOnly = true);
+} else if (Object.keys(state.tracks).length || Object.keys(state.slots).length) document.getElementById("saved").textContent = "Restored from this browser";
 renderProgress();
 renderSummary();
 document.querySelectorAll(".slot").forEach(s => io.observe(s));
