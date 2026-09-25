@@ -99,6 +99,11 @@
   .timeline .n { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.12em; }
   .timeline .p { font-size: 12px; color: var(--clay-deep); font-variant-numeric: tabular-nums; text-align: right; }
   .timeline .p.done { color: var(--matcha-deep); font-weight: 700; }
+  .timeline li.off {
+    display: grid; grid-template-columns: 82px minmax(0, 1fr) 32px; gap: 10px; align-items: baseline;
+    padding: 8px 12px; margin-left: -2px; border-left: 2px solid transparent; opacity: 0.45;
+  }
+  .timeline li.off .n { text-decoration: line-through; text-decoration-thickness: 1px; }
 
   .howto { font-size: 14px; }
   .howto ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
@@ -178,9 +183,13 @@
   }
   .slot-head .claim { grid-column: 2; font-family: var(--font-display); font-size: 17px; }
   .slot-head .ziel { grid-column: 2; font-size: 14px; color: var(--clay-deep); max-width: 80ch; }
+  .slot-head .heard {
+    grid-column: 2; font-size: 14px; max-width: 80ch; color: var(--matcha-deep);
+    border-left: 3px solid var(--matcha); padding-left: 12px; margin-top: 6px;
+  }
   @media (max-width: 700px) {
     .slot-head { grid-template-columns: minmax(0, 1fr); }
-    .slot-head .claim, .slot-head .ziel { grid-column: 1; }
+    .slot-head .claim, .slot-head .ziel, .slot-head .heard { grid-column: 1; }
   }
 
   /* Track cards: one grid, every card spans the same five row tracks
@@ -229,6 +238,13 @@
     font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.6;
     border-radius: 3px; padding: 1px 7px; color: var(--matcha-deep); background: var(--sencha);
   }
+  .track .prev {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11px; letter-spacing: 0.06em; line-height: 1.6;
+    border-radius: 999px; padding: 1px 8px 1px 5px; color: var(--matcha-deep); background: var(--foam-deep); border: 1px solid var(--matcha);
+  }
+  .track .prev .dot { width: 10px; height: 10px; border-width: 1.5px; }
+  .track .prev.new { padding: 1px 8px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--clay-deep); border-color: var(--clay); background: var(--paper); }
+  .prev-swatch { border-radius: 999px; border-color: var(--matcha); background: var(--foam-deep); }
   .track h3 { font-size: 16px; font-weight: 700; line-height: 1.3; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .track .open { font-size: 12px; white-space: nowrap; }
   .track .artist { color: var(--clay-deep); font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -329,6 +345,7 @@
       <span><i class="dot no"></i> No – doesn't fit the moment</span>
       <span class="legend-tag"><i class="swatch dan"></i> Sealed card on warm paper – Dan's own pick</span>
       <span class="legend-tag"><i class="swatch"></i> Plain card – a proposal to widen the field</span>
+      <span class="legend-tag"><i class="swatch prev-swatch"></i> "Round 1: …" chip – your verdict last time, kept for reference</span>
     </div>
   </aside>
 
@@ -351,8 +368,8 @@
     </aside>
     <section class="intro">
       <div>
-        <h1><span class="jp">抹茶の日 · Pre-Launch</span>Which music carries the morning?</h1>
-        <p>"Calm background music" can mean a lot of things – Japanese ambient, solo piano, breathwork drones, slow disco grooves. So here are a few deliberately different directions per slot. Your ratings tell me which corner to dig in for the journey. Everything stays saved in your browser until you send it.</p>
+        <h1><span class="jp">抹茶の日 · Pre-Launch · Round 2</span>Digging in the corner you pointed at</h1>
+        <p>Round 1 came back with one clear yes (Khruangbin – August 10), a handful of "right direction" votes and a firm no to everything quiet-piano, pure-ambient and lounge – plus "happy ambient" for the speeches and the workshop. So this round stays in exactly that corner: warm, sunny grooves for arriving and eating, bright and melodic ambient for listening. The Nos are gone, the tracks you already rated carry your round-1 verdict, and every plain card marked <em>New</em> is a fresh proposal. Breathe is off the list – Morena brings her own music. Same as before: rate, comment, send.</p>
       </div>
       <div class="note">
         <strong>Your name</strong>
@@ -388,49 +405,75 @@ const DAN_EMAIL = "";        // e.g. "dan@example.ch"
 
 const SLOTS = [
   {
-    key: "arrive", groups: ["Ambient & piano", "Organic groove", "Acoustic & voice", "Slow build"], name: "Arrive", time: "09:00–09:30",
+    key: "arrive", name: "Arrive", time: "09:00–09:30",
     claim: "Arrive. Slow down. Be welcome.",
+    heard: "Round 1: August 10 was the one clear yes, Heartbeats and Dayvan Cowboy pointed the way. Ambient, solo piano, lounge and psy were a no – gone.",
     ziel: "Personal welcome, welcome drink, palo santo. The music may be present but must not address anyone – first conversations have to stay light.",
     tracks: [
-      { id: "1osR4MmVEDVk2FXw5xr5Xv", group: "Ambient & piano", title: "Green", artist: "Hiroshi Yoshimura", len: "5:14", dir: "Japanese ambient",
+      { id: "1osR4MmVEDVk2FXw5xr5Xv", dropped: 2, group: "Ambient & piano", title: "Green", artist: "Hiroshi Yoshimura", len: "5:14", dir: "Japanese ambient",
         why: "1986, kankyō ongaku – the music that made Tokyo office lobbies and museums quiet. Literally called \"Green\"." },
-      { id: "5RqKo9P4DLA0bVyY70cWkr", group: "Ambient & piano", title: "saman", artist: "Ólafur Arnalds", len: "2:11", dir: "Piano · neoclassical",
+      { id: "5RqKo9P4DLA0bVyY70cWkr", dropped: 2, group: "Ambient & piano", title: "saman", artist: "Ólafur Arnalds", len: "2:11", dir: "Piano · neoclassical",
         why: "Warm piano with room around it. The yoga-studio direction, without the kitsch." },
       { id: "2MIavWMdvbYuRoA2Cw6VkN", group: "Organic groove", title: "August 10", artist: "Khruangbin", len: "4:25", dir: "Organic slow groove",
         why: "Bass, guitar, brushed drums. Movement without beat pressure – in case the morning is allowed some body." },
       { id: "3jQyadhLTxpxadQlkFh2b8", group: "Acoustic & voice", title: "Heartbeats", artist: "José González", len: "2:40", dir: "Acoustic · voice",
         why: "A test: does a singing voice disturb or warm the arrival? Very quiet, very close." },
-      { id: "25lTenJPmSfwCRZi2hjCcB", group: "Acoustic & voice", title: "Outer Wilds", artist: "Andrew Prahlow", len: "2:26", dir: "Acoustic · banjo & piano", by: "Dani",
+      { id: "25lTenJPmSfwCRZi2hjCcB", dropped: 2, group: "Acoustic & voice", title: "Outer Wilds", artist: "Andrew Prahlow", len: "2:26", dir: "Acoustic · banjo & piano", by: "Dani",
         why: "Main theme of the game Outer Wilds. Campfire banjo and piano, wide and hopeful – a morning that opens outward." },
       { id: "37HI0imp0t6a0MBS00lPkS", group: "Slow build", title: "The Mighty Rio Grande", artist: "This Will Destroy You", len: "11:16", dir: "Post-rock · slow swell", by: "Dani",
         why: "Eleven minutes that start as a whisper of guitar and grow into a wide horizon. Long enough to cover most of the arrival on its own." },
-      { id: "0cnqrpIwbHIyxJh4G0UCiV", group: "Organic groove", title: "Where Is It You Go", artist: "DOPE LEMON", len: "6:38", dir: "Hazy · slow groove · voice", by: "Dani",
+      { id: "0cnqrpIwbHIyxJh4G0UCiV", dropped: 2, group: "Organic groove", title: "Where Is It You Go", artist: "DOPE LEMON", len: "6:38", dir: "Hazy · slow groove · voice", by: "Dani",
         why: "Angus Stone's lazy-Sunday project. Hazy guitar, soft vocal, unhurried beat – the arrival with a little sway in it." },
       { id: "4Y2W4zKa3q72ztbkA0r8Va", group: "Slow build", title: "Dayvan Cowboy", artist: "Boards of Canada", len: "5:00", dir: "Warm electronica · slow build", by: "Dani",
         why: "Two minutes of weightless drift, then the beat and guitars open up like a sky. The arrival's slow turn from quiet to warm." },
-      { id: "488E8BWYDCDrL6vunOAzPy", group: "Organic groove", title: "Lebanese Blonde", artist: "Thievery Corporation", len: "4:50", dir: "Downtempo · sitar · lounge", by: "Dani",
+      { id: "488E8BWYDCDrL6vunOAzPy", dropped: 2, group: "Organic groove", title: "Lebanese Blonde", artist: "Thievery Corporation", len: "4:50", dir: "Downtempo · sitar · lounge", by: "Dani",
         why: "Sitar, dub bass, a slow shuffle. The late-90s lounge classic – the arrival as a lobby with the windows open." },
-      { id: "6UnfPP7ChYwQ2h3uTduRA6", group: "Organic groove", title: "Stage Left", artist: "Ajja", len: "4:55", dir: "Psychedelic downtempo · guitar", by: "Dani",
+      { id: "6UnfPP7ChYwQ2h3uTduRA6", dropped: 2, group: "Organic groove", title: "Stage Left", artist: "Ajja", len: "4:55", dir: "Psychedelic downtempo · guitar", by: "Dani",
         why: "Swiss psy-dub producer, laid-back tempo with liquid guitar and a rolling bass. The arrival with a slow, curious groove under it." },
+      { id: "0b83Lnss5ffRDHgox47cF8", round: 2, group: "Organic groove", title: "Zionsville", artist: "Khruangbin", len: "4:11", dir: "Organic slow groove",
+        why: "Same trio as August 10, one album earlier and even slower. Bass and guitar breathe together, nothing addresses anyone – the quietest way into the room." },
+      { id: "4EuMgorAtkA01ZBDGLb9si", round: 2, group: "Organic groove", title: "The Magnificent Moon", artist: "Mildlife", len: "8:52", dir: "Cosmic jazz-groove · Melbourne",
+        why: "Melbourne band, warm Rhodes and flute over a slow, sunny groove. Nine minutes that stay light – the Khruangbin feeling with a bit more shimmer." },
+      { id: "4Lgp39erLhFmODQ2AnPl2r", round: 2, group: "Organic groove", title: "Lotus", artist: "Sven Wunder", len: "3:24", dir: "Library jazz · flute & strings",
+        why: "Swedish producer rebuilding 70s library music: flute, harp, soft strings over a gentle beat. Warm and instrumental, with a slight Eastern lilt that suits the tea without saying so." },
+      { id: "2cRYvcyWfz7jieYIBkI7JR", round: 2, group: "Acoustic & voice", title: "lovers' carvings", artist: "Bibio", len: "3:58", dir: "Acoustic loop · warm",
+        why: "Fingerpicked guitar loop that slowly opens into a happy little melody. The José González warmth without a singer in the room." },
+      { id: "3G3PP7pAkAaZ6QzM0duBry", round: 2, group: "Acoustic & voice", title: "Cucurucu", artist: "Nick Mulvey", len: "4:27", dir: "Acoustic · voice · sunny",
+        why: "Guitar, hand percussion and a voice that stays friendly rather than intimate. The direction Heartbeats pointed at, one notch brighter." },
+      { id: "4Cy6hgJGkLsOD1S8x4ysFF", round: 2, group: "Slow build", title: "Dive", artist: "Tycho", len: "8:19", dir: "Warm electronica · slow bloom",
+        why: "Where Dayvan Cowboy points, Tycho lives: warm synths, soft guitar, a slow bloom over eight minutes. Sunnier than Boards of Canada, never in a hurry." },
     ],
   },
   {
-    key: "see", groups: ["Pure ambient", "Piano"], name: "See", time: "09:30–10:00",
+    key: "see", name: "See", time: "09:30–10:00",
     claim: "Matcha & Friends is seen.",
+    heard: "Round 1: all four proposals were a no, with the note \"*happy* ambient\". So no solo piano, no Eno drone – bright and melodic instead, still nothing that argues with a voice.",
     ziel: "Speeches by Morena and Marko. The music sits under voices: no pulse, no melody that pulls attention – or off entirely while someone speaks.",
     tracks: [
-      { id: "3bCmDqflFBHijgJfvtqev5", group: "Pure ambient", title: "1/1", artist: "Brian Eno", len: "17:21", dir: "Pure ambient",
+      { id: "3bCmDqflFBHijgJfvtqev5", dropped: 2, group: "Pure ambient", title: "1/1", artist: "Brian Eno", len: "17:21", dir: "Pure ambient",
         why: "Music for Airports. 17 minutes that disappear under speech and still hold the room." },
-      { id: "25zykbJGBYXYjnq5VyhO3N", group: "Piano", title: "Ambre", artist: "Nils Frahm", len: "3:47", dir: "Solo piano",
+      { id: "25zykbJGBYXYjnq5VyhO3N", dropped: 2, group: "Piano", title: "Ambre", artist: "Nils Frahm", len: "3:47", dir: "Solo piano",
         why: "Intimate piano, almost whispered. For the moments between two speakers." },
-      { id: "2DuFmqmY2DatBTiWz2tXcF", group: "Piano", title: "andata", artist: "Ryuichi Sakamoto", len: "4:38", dir: "Piano · organ · Japan",
+      { id: "2DuFmqmY2DatBTiWz2tXcF", dropped: 2, group: "Piano", title: "andata", artist: "Ryuichi Sakamoto", len: "4:38", dir: "Piano · organ · Japan",
         why: "Solemn, slow, Japanese. Fits \"Thank You and Outlook\"." },
-      { id: "4sQBgAPX981djCcsjDJvQx", group: "Piano", title: "Glass", artist: "Hania Rani", len: "4:30", dir: "Piano with pulse",
+      { id: "4sQBgAPX981djCcsjDJvQx", dropped: 2, group: "Piano", title: "Glass", artist: "Hania Rani", len: "4:30", dir: "Piano with pulse",
         why: "Counter-probe: a bit more motion. Too much under speeches, or exactly right as a transition?" },
+      { id: "0TB3v4KJQE8zgTt9HETmfZ", round: 2, group: "Bright ambient", title: "Sansevieria", artist: "Green-House", len: "4:24", dir: "Plant ambient · bright",
+        why: "From \"Six Songs for Invisible Gardens\" – music written for houseplants. Soft synth chimes, birdsong, no pulse, nothing sad. Sits under a voice without a fight." },
+      { id: "54NquOiocazAzjHpqIGGS3", round: 2, group: "Bright ambient", title: "Halving The Compass", artist: "Helios", len: "5:26", dir: "Warm ambient · guitar",
+        why: "Keith Kenniff's warmest record: guitar and piano melting into a glow. Melodic, but slow enough to stay behind a speech." },
+      { id: "5xYR2G6YOEzX2X9asFUrOE", round: 2, group: "Bright ambient", title: "Space 1", artist: "Nala Sinephro", len: "4:08", dir: "Harp · ambient jazz",
+        why: "London harpist, modular synths and a little saxophone. Bright and floating – the 2021 kind of ambient that people actually smile at." },
+      { id: "2z7VAEi6i9GMkQloRUzyu1", round: 2, group: "Bright ambient", title: "The Dance No. 1", artist: "Laraaji & Brian Eno", len: "9:15", dir: "Zither · joyful shimmer",
+        why: "Eno again, but the other side of him: Laraaji's hammered zither, rippling and glad. The happiest thing the Ambient series ever produced." },
+      { id: "1MIwRUsj23h7cYn6mNiqHw", round: 2, group: "Gentle & melodic", title: "Perpetuum Mobile", artist: "Penguin Cafe Orchestra", len: "4:29", dir: "Chamber folk · gentle pulse",
+        why: "Piano and strings turning in a soft circle. A quiet pulse, a smile in it – the piece between two speeches rather than under one." },
+      { id: "0Gr2XQOIMaaUH86iOrWGur", round: 2, group: "Gentle & melodic", title: "Arrival of the Birds", artist: "The Cinematic Orchestra", len: "2:37", dir: "Strings · cinematic · warm",
+        why: "Two and a half minutes of strings opening up. Big enough to mark a moment, warm enough not to turn it solemn – for when the founders step up." },
     ],
   },
   {
-    key: "breathe", groups: ["Drones & bowls", "Soft ambient", "Cinematic"], name: "Breathe", time: "10:00–10:30",
+    key: "breathe", dropped: 2, name: "Breathe", time: "10:00–10:30",
     claim: "Cultivating presence.",
     ziel: "Breathwork with Morena. Regulate the nervous system, arrive in the moment. If Morena brings her own music these are just proposals – otherwise: long, deep pieces without breaks.",
     tracks: [
@@ -453,8 +496,9 @@ const SLOTS = [
     ],
   },
   {
-    key: "feel", groups: ["Traditional Japan", "Piano & voice", "Warm & familiar"], name: "Feel", time: "10:30–11:00",
+    key: "feel", name: "Feel", time: "10:30–11:00",
     claim: "Feeling the mindful practice behind matcha.",
+    heard: "Round 1: nothing rated yet, note \"happy ambient\". The six proposals stay; new are three bright Japanese pieces from the early 80s – Japan without the temple.",
     ziel: "Workshop \"How over What\" with Marko – origin and meaning of matcha, Japanese tea culture. Here the music may be most clearly Japanese, without becoming a cliché.",
     tracks: [
       { id: "6TbAGuSArjhdMnPYFtFWA9", group: "Traditional Japan", title: "Tsuru no Sugomori", artist: "Rodrigo Rodriguez (shakuhachi)", len: "5:13", dir: "Shakuhachi · traditional",
@@ -469,11 +513,18 @@ const SLOTS = [
         why: "Kikujiro soundtrack. Very familiar, very friendly – counter-probe whether recognition helps or distracts." },
       { id: "3IWc2l9A8RyPfJpDmtRwtu", group: "Warm & familiar", title: "Lotus", artist: "Secret Garden", len: "4:35", dir: "Celtic-Nordic · flute & strings", by: "Dani",
         why: "Rolf Løvland's Earth Songs. Flute over strings, gentle and unhurried – the lotus as a bridge from Japan to the Nordic." },
+      { id: "1lxgQG0xeAsS1r0u9M1TcP", round: 2, group: "Bright Japan · early 80s", title: "Glass Chime", artist: "Inoyama Land", len: "3:26", dir: "Japanese ambient 1983 · playful",
+        why: "Two members of Hikashu, 1983, produced by Haruomi Hosono. Glassy synth bells that bounce like light on water – Japanese, happy, not a koto in sight." },
+      { id: "6asUhV1w2Zk1xMZvsp4xQy", round: 2, group: "Bright Japan · early 80s", title: "Shinzo no Tobira", artist: "Mariah", len: "4:40", dir: "Japanese synth-pop 1983 · voice",
+        why: "Yasuaki Shimizu's band, 1983: a gentle synth pulse and a voice half in Japanese, half in Armenian, that feels like sunlight. The record everyone rediscovered – warm and familiar without being a cliché." },
+      { id: "7jHJzuL0mugoH5XH7uJ4eQ", round: 2, group: "Bright Japan · early 80s", title: "Kakashi", artist: "Yasuaki Shimizu", len: "4:44", dir: "Japanese jazz-ambient 1982 · sax",
+        why: "Same composer, a year earlier: saxophone, marimba, dub echoes. Bright, curious, a little playful – tea culture heard from Tokyo in 1982, not from a temple." },
     ],
   },
   {
-    key: "taste", groups: ["Organic groove & voice", "Slow disco & pop", "Deep & organic house"], name: "Taste", time: "11:00–13:00",
+    key: "taste", name: "Taste", time: "11:00–13:00",
     claim: "Enjoying the matcha brunch together.",
+    heard: "Round 1: five \"right direction\" votes, all warm groove with a voice. Lo-fi soul and dream pop were a no. Twelve tracks weren't rated yet and stay in.",
     ziel: "Two hours of brunch by Martina. Now the music may carry conversations instead of just holding the room: groove, voices, Sunday feeling – but never so loud that people have to lean in.",
     tracks: [
       { id: "24ntSW3QVJzR79lHAAOTaY", group: "Organic groove & voice", title: "Texas Sun", artist: "Khruangbin & Leon Bridges", len: "4:12", dir: "Organic groove · voice", by: "Dani",
@@ -482,9 +533,9 @@ const SLOTS = [
         why: "The low-motion-disco direction, literally: slow four-to-the-floor, guitar, floating. Daytime disco without the club." },
       { id: "35U4PXL3W3XIkAjEUdhr36", group: "Slow disco & pop", title: "Harvest Moon", artist: "Poolside", len: "6:08", dir: "Daytime disco · cover",
         why: "Neil Young as a Poolside cover. Familiar enough to hum along, slow enough to eat to." },
-      { id: "2CuUB5MbfRShtunR8g5hjR", group: "Organic groove & voice", title: "Ylang Ylang", artist: "FKJ", len: "3:33", dir: "Lo-fi soul · piano",
+      { id: "2CuUB5MbfRShtunR8g5hjR", dropped: 2, group: "Organic groove & voice", title: "Ylang Ylang", artist: "FKJ", len: "3:33", dir: "Lo-fi soul · piano",
         why: "Piano, bass, a little dust. Between courses, when it may get quieter again." },
-      { id: "75IQVo8hqI1iwVZyvkN2VT", group: "Organic groove & voice", title: "Show Me How", artist: "Men I Trust", len: "3:35", dir: "Dream pop · voice",
+      { id: "75IQVo8hqI1iwVZyvkN2VT", dropped: 2, group: "Organic groove & voice", title: "Show Me How", artist: "Men I Trust", len: "3:35", dir: "Dream pop · voice",
         why: "Soft voice, soft bass. A bit younger and closer to café than to wellness." },
       { id: "6G6M4fl2I0eqEQnzyTwR8m", group: "Organic groove & voice", title: "You Wish", artist: "Nightmares On Wax", len: "3:30", dir: "Downtempo · Sunday", by: "Dani",
         why: "The Sunday-morning classic. Hip-hop pulse in slow motion, strings on top." },
@@ -514,6 +565,20 @@ const SLOTS = [
         why: "The 2010 Hurts anthem given Purple Disco Machine's glossy disco treatment. Big, familiar chorus – a test of how much pop the brunch can carry." },
       { id: "7pdPZuy0ILkf5IT1oIsJMK", group: "Deep & organic house", title: "Soul (NiCe7 Remix)", artist: "AFFKT, Sutja Gutierrez, NiCe7", len: "7:02", dir: "Deep house · soulful voice", by: "Dani",
         why: "Sutja Gutierrez's raw vocal over a rolling deep-house groove. Seven minutes with real soul in it – for the stretch when the brunch turns into an afternoon." },
+      { id: "0S3BtG3i5tkQmehJhIhHF3", round: 2, group: "Organic groove & voice", title: "Time (You and I)", artist: "Khruangbin", len: "5:42", dir: "Disco-funk · voice",
+        why: "The one Khruangbin track with a proper vocal hook and a disco bass line. Texas Sun's cousin for when the brunch gets louder." },
+      { id: "6EOJjwcPgGWe98IDyCsBmY", round: 2, group: "Organic groove & voice", title: "In The Waiting Line", artist: "Zero 7, Sophie Barker", len: "4:32", dir: "Downtempo · voice · 2001",
+        why: "The Air and Nightmares On Wax corner, with a singer: Rhodes, slow beat, a hushed voice. Carries a conversation without pulling on it." },
+      { id: "64EfSAF5nxhIfUw1GbPPCC", round: 2, group: "Organic groove & voice", title: "Les Nuits", artist: "Nightmares On Wax", len: "6:20", dir: "Downtempo · strings · 1999",
+        why: "You Wish was the right direction – this is the same album's centrepiece: strings, a lazy beat, six minutes of afternoon." },
+      { id: "5le4sn0iMcnKU56bdmNzso", round: 2, group: "Soul & sunshine", title: "Everybody Loves The Sunshine", artist: "Roy Ayers Ubiquity", len: "3:59", dir: "Soul · 1976 · vibraphone",
+        why: "Vibraphone, Moog and the most relaxed chorus in soul history. Sunday feeling in one title." },
+      { id: "0bRXwKfigvpKZUurwqAlEh", round: 2, group: "Soul & sunshine", title: "Lovely Day", artist: "Bill Withers", len: "4:17", dir: "Soul · 1977 · well known",
+        why: "Everyone knows it, nobody minds hearing it again. The safest smile in the room." },
+      { id: "4Ceuov0KONa1wzy37VChlp", round: 2, group: "Soul & sunshine", title: "Look Around the Corner", artist: "Quantic, Alice Russell, The Combo Barbaro", len: "4:28", dir: "Soul · Latin · voice",
+        why: "Recorded in Cali, Colombia with a big band: brass, strings and Alice Russell's voice. Warm and sunny the way California Dreamin' is – but from this century." },
+      { id: "66tkDkPsznE5zIHNt4QkXB", round: 2, group: "Slow disco & pop", title: "Tieduprightnow", artist: "Parcels", len: "4:09", dir: "Disco-pop · Berlin · voice",
+        why: "Australians in Berlin doing 70s disco-pop with real harmonies. Sits next to Low Motion Disco and Poolside, a bit more hummable." },
     ],
   },
 ];
@@ -521,7 +586,7 @@ const SLOTS = [
 // ---- sent picks, pasted back in so they can be viewed on the page (?review or ?review=<key>) ----
 const RESPONSES = {
   round1: {
-    label: "Round 1", who: "(no name)", asOf: "18 Sept 2026, 14:40",
+    round: 1, label: "Round 1", who: "(no name)", asOf: "18 Sept 2026, 14:40",
     who_note: "sent without a name",
     tracks: {
       // Arrive
@@ -557,7 +622,14 @@ const RESPONSES = {
 const reviewKey = new URLSearchParams(location.search).get("review");
 const REVIEW = reviewKey === null ? null : (RESPONSES[reviewKey || "round1"] || null);
 
-const STORE = "matcha-journey-v1";
+const ROUND = 2;                              // what the page proposes right now
+const STORE = "matcha-journey-v2";            // fresh draft per round – round-1 verdicts are shown on the cards instead
+// A track or slot with round: n first appeared in round n (default 1); dropped: n means gone from round n on.
+const inRound = (x, r) => (x.round || 1) <= r && (!x.dropped || x.dropped > r);
+const shown = x => inRound(x, REVIEW ? REVIEW.round : ROUND);
+const slotsShown = () => SLOTS.filter(shown);
+const tracksShown = s => s.tracks.filter(shown);
+const PREV = RESPONSES.round1;                // last round's verdicts, stamped on the cards this round
 const V_LABEL = { yes: "Exactly this", dir: "Right direction", no: "No" };
 const V_MARK = { yes: "✓", dir: "~", no: "✗" };
 
@@ -589,15 +661,18 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;"
 
 // ---- render ----
 function renderTimeline() {
-  document.getElementById("timeline").innerHTML = SLOTS.map(s => `
+  document.getElementById("timeline").innerHTML = SLOTS.map(s => shown(s) ? `
     <li><a href="#slot-${s.key}" data-slot="${s.key}">
       <span class="t">${s.time}</span><span class="n">${s.name.toUpperCase()}</span><span class="p" id="prog-${s.key}"></span>
-    </a></li>`).join("");
+    </a></li>` : `
+    <li class="off" title="Not part of this round"><span class="t">${s.time}</span><span class="n">${s.name.toUpperCase()}</span><span class="p">–</span></li>`).join("");
 }
 
 function renderSlots() {
-  document.getElementById("slots").innerHTML = SLOTS.map(s => {
+  document.getElementById("slots").innerHTML = slotsShown().map(s => {
     const sl = state.slots[s.key] || {};
+    const tracks = tracksShown(s);
+    const groups = [...new Set(tracks.map(t => t.group))];
     return `
     <section class="slot" id="slot-${s.key}">
       <div class="slot-head">
@@ -605,18 +680,19 @@ function renderSlots() {
         <h2>${s.name.toUpperCase()}</h2>
         <p class="claim">${esc(s.claim)}</p>
         <p class="ziel">${esc(s.ziel)}</p>
+        ${!REVIEW && s.heard ? `<p class="heard">${esc(s.heard)}</p>` : ""}
       </div>
       <div class="tracks">
-        ${s.groups.map(g => {
-          const inGroup = s.tracks.filter(t => t.group === g);
-          if (!inGroup.length) return "";
+        ${groups.map(g => {
+          const inGroup = tracks.filter(t => t.group === g);
           return `<div class="group"><span class="g">${esc(g)}</span><span class="rule"></span><span class="n">${inGroup.length}</span></div>` + inGroup.map(t => {
           const tv = state.tracks[t.id] || {};
+          const prev = !REVIEW && PREV.tracks[t.id]?.v;
           return `
           <article class="track${t.by ? " dan" : ""}" id="track-${t.id}" data-v="${tv.v || ""}">
             ${t.by ? `<div class="seal" title="${esc(t.by)}'s pick">DAN<small>印</small></div>` : ""}
             <div class="track-head">
-              <div class="chips"><span class="dir-tag">${esc(t.dir)}</span></div>
+              <div class="chips"><span class="dir-tag">${esc(t.dir)}</span>${prev ? `<span class="prev prev-${prev}" title="Your verdict in round 1"><i class="dot ${prev}"></i>Round 1: ${V_LABEL[prev]}</span>` : (t.round || 1) === ROUND && !REVIEW ? `<span class="prev new">New</span>` : ""}</div>
               <h3 title="${esc(t.title)}">${esc(t.title)}</h3>
               <a class="open" href="https://open.spotify.com/track/${t.id}" target="_blank" rel="noopener">Open in Spotify ↗</a>
               <div class="artist" title="${esc(t.artist)}">${esc(t.artist)}</div>
@@ -649,22 +725,23 @@ function renderSlots() {
 }
 
 function renderProgress() {
-  for (const s of SLOTS) {
-    const done = s.tracks.filter(t => state.tracks[t.id]?.v).length;
+  for (const s of slotsShown()) {
+    const tracks = tracksShown(s);
+    const done = tracks.filter(t => state.tracks[t.id]?.v).length;
     const el = document.getElementById("prog-" + s.key);
-    el.textContent = `${done}/${s.tracks.length}`;
-    el.classList.toggle("done", done === s.tracks.length);
+    el.textContent = `${done}/${tracks.length}`;
+    el.classList.toggle("done", done === tracks.length);
   }
 }
 
 function buildSummary() {
   const lines = [];
-  lines.push(`Matcha Music Journey – picks from ${state.who?.trim() || "(no name)"}`);
+  lines.push(`Matcha Music Journey · Round ${REVIEW ? REVIEW.round : ROUND} – picks from ${state.who?.trim() || "(no name)"}`);
   lines.push(`As of: ${REVIEW ? REVIEW.asOf : new Date().toLocaleString("en-CH", { dateStyle: "medium", timeStyle: "short" })}`);
-  for (const s of SLOTS) {
+  for (const s of slotsShown()) {
     lines.push("", `${s.name.toUpperCase()} ${s.time}`);
     let any = false;
-    for (const t of s.tracks) {
+    for (const t of tracksShown(s)) {
       const tv = state.tracks[t.id];
       if (!tv?.v && !tv?.c?.trim()) continue;
       any = true;
@@ -826,6 +903,8 @@ if (REVIEW) {
   document.getElementById("review-title").textContent = `${REVIEW.label} · picks from ${REVIEW.who} · sent ${REVIEW.asOf}`;
   document.getElementById("review-text").textContent = `Read-only view of what came back: ${rated} tracks rated, notes under each slot. Nothing you see here is saved in this browser, and your own draft stays untouched.`;
   document.getElementById("review-banner").hidden = false;
+  document.querySelector(".intro h1").innerHTML = `<span class="jp">抹茶の日 · Pre-Launch · ${esc(REVIEW.label)}</span>What came back`;
+  document.querySelector(".intro > div > p").textContent = `The proposals exactly as they stood in ${REVIEW.label.toLowerCase()}, with the verdicts and notes that were sent. The rating page has moved on to round ${ROUND}.`;
   document.getElementById("notice").hidden = true;
   document.getElementById("saved").textContent = `Viewing ${REVIEW.label} picks`;
   document.querySelectorAll("textarea, #who").forEach(el => el.readOnly = true);
